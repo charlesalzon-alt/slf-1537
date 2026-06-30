@@ -95,12 +95,11 @@
 
     <div class="card">
       <h2>Try it</h2>
-      <p style="margin:0 0 16px;font-size:15.5px;">Enter a mobile number to receive the activation SMS, then load Anna and start the call. She is set up with a sample owner profile so the conversation feels real.</p>
+      <p style="margin:0 0 16px;font-size:15.5px;">Enter a mobile number to receive the activation SMS, then start the call with Anna using the widget at the bottom-right. She is set up with a sample owner profile so the conversation feels real.</p>
       <div class="field">
         <label for="mobile">Your mobile number (the SMS goes here)</label>
         <input id="mobile" type="tel" placeholder="+41 79 123 45 67" autocomplete="tel" />
       </div>
-      <button id="startDemo" class="btn">Load the agent</button>
       <p id="startNote" class="cta-note"></p>
       <p class="cta-note">Sample profile: Herr Thomas Müller, Bahnhofstrasse 12, 8001 Zürich. The agent speaks German. When you express interest, Anna texts the cockpit activation link to the number above.</p>
     </div>
@@ -132,49 +131,43 @@
     </footer>
   </div>
 
+  <elevenlabs-convai
+    id="mpreAgent"
+    agent-id="agent_1101kw9w2jhjfk6tseg7hyqv997v"
+    server-location="eu-residency"
+    language="de"
+    first-message="Guten Tag, hier ist Anna von MoneyPark, ich melde mich bei Ihnen mit einer guten Nachricht zu Ihrer Immobilie. Spreche ich mit Thomas Müller?"
+    dynamic-variables='{"customer_full_name":"Thomas Müller","customer_first_name":"Thomas","title":"Herr","last_name":"Müller","advisor_name":"","property_address":"Bahnhofstrasse 12, 8001 Zürich","current_value_estimate":"1,18 Mio. CHF","value_change_hint":"leicht gestiegen","customer_phone":""}'
+  ></elevenlabs-convai>
   <script src="https://unpkg.com/@elevenlabs/convai-widget-embed" async type="text/javascript"></script>
   <script>
     (function () {
-      var btn = document.getElementById('startDemo');
       var input = document.getElementById('mobile');
       var note = document.getElementById('startNote');
+      var el = document.getElementById('mpreAgent');
 
-      btn.addEventListener('click', function () {
+      var base = {
+        customer_full_name: 'Thomas Müller',
+        customer_first_name: 'Thomas',
+        title: 'Herr',
+        last_name: 'Müller',
+        advisor_name: '',
+        property_address: 'Bahnhofstrasse 12, 8001 Zürich',
+        current_value_estimate: '1,18 Mio. CHF',
+        value_change_hint: 'leicht gestiegen'
+      };
+
+      function sync() {
         var phone = (input.value || '').trim();
-        if (!phone) {
-          note.textContent = 'Please enter a mobile number first.';
-          input.focus();
-          return;
-        }
-        if (document.querySelector('elevenlabs-convai')) {
-          note.textContent = 'The agent is already loaded (bottom-right). Restart the call there to use a new number.';
-          return;
-        }
+        var dv = Object.assign({}, base, { customer_phone: phone });
+        el.setAttribute('dynamic-variables', JSON.stringify(dv));
+        note.textContent = phone
+          ? 'The activation SMS will go to ' + phone + '. Start the call in the widget (bottom-right).'
+          : '';
+      }
 
-        var dynamicVariables = {
-          customer_full_name: 'Thomas Müller',
-          customer_first_name: 'Thomas',
-          title: 'Herr',
-          last_name: 'Müller',
-          advisor_name: '',
-          property_address: 'Bahnhofstrasse 12, 8001 Zürich',
-          current_value_estimate: '1,18 Mio. CHF',
-          value_change_hint: 'leicht gestiegen',
-          customer_phone: phone
-        };
-
-        var el = document.createElement('elevenlabs-convai');
-        el.setAttribute('agent-id', 'agent_1101kw9w2jhjfk6tseg7hyqv997v');
-        el.setAttribute('server-location', 'eu-residency');
-        el.setAttribute('language', 'de');
-        el.setAttribute('first-message', 'Guten Tag, hier ist Anna von MoneyPark, ich melde mich bei Ihnen mit einer guten Nachricht zu Ihrer Immobilie. Spreche ich mit Thomas Müller?');
-        el.setAttribute('dynamic-variables', JSON.stringify(dynamicVariables));
-        document.body.appendChild(el);
-
-        note.textContent = 'Agent loaded. Open it bottom-right and start the call. The activation SMS will go to ' + phone + '.';
-        btn.disabled = true;
-        input.disabled = true;
-      });
+      input.addEventListener('input', sync);
+      sync();
     })();
   </script>
 </body>
