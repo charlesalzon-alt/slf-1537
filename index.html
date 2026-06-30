@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>MoneyPark · MPRE Owner Activation Agent (demo)</title>
+  <style>
+    :root {
+      --mp-ink: #0d1b2a;
+      --mp-blue: #1f6feb;
+      --mp-blue-dark: #14439e;
+      --mp-bg: #f4f6fb;
+      --mp-card: #ffffff;
+      --mp-muted: #5b6b7f;
+      --mp-line: #e3e8f0;
+      --mp-amber-bg: #fff7e6;
+      --mp-amber-line: #f0c674;
+      --mp-amber-ink: #7a5b00;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--mp-bg);
+      color: var(--mp-ink);
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+    }
+    .wrap { max-width: 760px; margin: 0 auto; padding: 48px 20px 96px; }
+    header { margin-bottom: 8px; }
+    .brand {
+      display: inline-flex; align-items: center; gap: 10px;
+      font-weight: 700; letter-spacing: -0.01em; font-size: 18px; color: var(--mp-ink);
+    }
+    .brand .dot { width: 12px; height: 12px; border-radius: 50%; background: var(--mp-blue); display: inline-block; }
+    h1 { font-size: 30px; line-height: 1.2; margin: 22px 0 10px; letter-spacing: -0.02em; }
+    .sub { color: var(--mp-muted); font-size: 17px; margin: 0 0 28px; }
+    .card {
+      background: var(--mp-card); border: 1px solid var(--mp-line); border-radius: 16px;
+      padding: 26px 26px 28px; box-shadow: 0 1px 2px rgba(13,27,42,0.04), 0 8px 24px rgba(13,27,42,0.05);
+      margin-bottom: 22px;
+    }
+    .card h2 { font-size: 14px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--mp-muted); margin: 0 0 16px; }
+    .steps { margin: 0; padding: 0; list-style: none; display: grid; gap: 14px; }
+    .steps li { display: flex; gap: 12px; align-items: flex-start; }
+    .steps .n {
+      flex: 0 0 26px; height: 26px; border-radius: 50%; background: var(--mp-blue); color: #fff;
+      font-size: 13px; font-weight: 700; display: grid; place-items: center; margin-top: 1px;
+    }
+    .steps .t { font-size: 15.5px; }
+    .steps .t b { font-weight: 650; }
+    .meta { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 24px; margin: 0; }
+    .meta div { font-size: 14px; padding: 9px 0; border-bottom: 1px solid var(--mp-line); }
+    .meta dt { color: var(--mp-muted); }
+    .meta dd { margin: 2px 0 0; font-weight: 600; }
+    .hypo {
+      background: var(--mp-amber-bg); border: 1px solid var(--mp-amber-line); color: var(--mp-amber-ink);
+      border-radius: 12px; padding: 14px 16px; font-size: 14px; margin-bottom: 26px;
+    }
+    .hypo b { color: #5e4500; }
+    .cta-note { font-size: 14px; color: var(--mp-muted); margin: 4px 0 0; }
+    footer { color: var(--mp-muted); font-size: 13px; margin-top: 36px; text-align: center; }
+    footer a { color: var(--mp-blue-dark); }
+    code { background: #eef2f8; padding: 1px 6px; border-radius: 5px; font-size: 13px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <span class="brand"><span class="dot"></span> MoneyPark · MPRE</span>
+    </header>
+
+    <h1>Owner Activation Agent</h1>
+    <p class="sub">An outbound voice assistant that brings owners a fresh valuation of their home, listens to how they feel about their purchase, and walks them into their personal MoneyPark cockpit.</p>
+
+    <div class="hypo">
+      <b>Hypothesis demo.</b> This page lets you experience the agent in the browser by clicking the widget (inbound). In production it runs as an <b>outbound call</b>, which assumes a legal basis to contact owners without prior opt-in. It is the deliberate exception to the otherwise opt-in activation loop.
+    </div>
+
+    <div class="card">
+      <h2>Try it</h2>
+      <p style="margin:0 0 6px;font-size:15.5px;">Click the widget in the corner and speak with Anna. She is set up with a sample owner profile so the conversation feels real.</p>
+      <p class="cta-note">Sample profile: Herr Thomas Müller, Bahnhofstrasse 12, 8001 Zürich, advised by Stefan Heitmann. The agent speaks German.</p>
+    </div>
+
+    <div class="card">
+      <h2>What the agent does</h2>
+      <ol class="steps">
+        <li><span class="n">1</span><span class="t"><b>Confirms identity</b>, then introduces itself and discloses it is a virtual assistant.</span></li>
+        <li><span class="n">2</span><span class="t"><b>Delivers value first:</b> the fresh estimate of the owner's property and how it has moved since purchase.</span></li>
+        <li><span class="n">3</span><span class="t"><b>Captures one data point:</b> how satisfied the owner is with their purchase (CSAT).</span></li>
+        <li><span class="n">4</span><span class="t"><b>Activates the cockpit:</b> sends a one-tap login link by SMS and offers to guide the first login live.</span></li>
+      </ol>
+    </div>
+
+    <div class="card">
+      <h2>Configuration</h2>
+      <dl class="meta">
+        <div><dt>Persona</dt><dd>Owners (cockpit never activated)</dd></div>
+        <div><dt>Voice</dt><dd>Anna (shared with refinance agent)</dd></div>
+        <div><dt>Channel</dt><dd>Outbound voice</dd></div>
+        <div><dt>Languages</dt><dd>German (FR / IT / EN to follow)</dd></div>
+        <div><dt>Goal</dt><dd>Cockpit activation + CSAT</dd></div>
+        <div><dt>Tenant</dt><dd>ElevenLabs EU residency</dd></div>
+      </dl>
+    </div>
+
+    <footer>
+      Internal prototype for the MoneyPark MPRE activation work. Not for public distribution.
+    </footer>
+  </div>
+
+  <script src="https://unpkg.com/@elevenlabs/convai-widget-embed" async type="text/javascript"></script>
+  <elevenlabs-convai
+    agent-id="agent_1101kw9w2jhjfk6tseg7hyqv997v"
+    server-location="eu-residency"
+    language="de"
+    first-message="Guten Tag, spreche ich mit Thomas Müller?"
+    dynamic-variables='{"customer_full_name":"Thomas Müller","customer_first_name":"Thomas","title":"Herr","last_name":"Müller","advisor_name":"Stefan Heitmann","property_address":"Bahnhofstrasse 12, 8001 Zürich","current_value_estimate":"1,18 Mio. CHF","value_change_hint":"leicht gestiegen"}'
+  ></elevenlabs-convai>
+</body>
+</html>
