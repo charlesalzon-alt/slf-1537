@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="robots" content="noindex, nofollow" />
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
   <title>MoneyPark · MPRE Owner Activation Agent (demo)</title>
   <style>
     :root {
@@ -63,6 +64,20 @@
     footer { color: var(--mp-muted); font-size: 13px; margin-top: 36px; text-align: center; }
     footer a { color: var(--mp-blue-dark); }
     code { background: #eef2f8; padding: 1px 6px; border-radius: 5px; font-size: 13px; }
+    .field { margin: 0 0 14px; }
+    .field label { display: block; font-size: 13px; color: var(--mp-muted); margin: 0 0 6px; font-weight: 600; }
+    .field input {
+      width: 100%; padding: 12px 14px; font-size: 16px; border: 1px solid var(--mp-line);
+      border-radius: 10px; outline: none; transition: border-color .15s, box-shadow .15s;
+    }
+    .field input:focus { border-color: var(--mp-blue); box-shadow: 0 0 0 3px rgba(31,111,235,0.15); }
+    .btn {
+      appearance: none; border: 0; cursor: pointer; background: var(--mp-blue); color: #fff;
+      font-size: 15px; font-weight: 650; padding: 12px 20px; border-radius: 10px; transition: background .15s;
+    }
+    .btn:hover { background: var(--mp-blue-dark); }
+    .btn:disabled { background: #9bb7e8; cursor: default; }
+    #startNote { min-height: 18px; margin: 12px 0 0; }
   </style>
 </head>
 <body>
@@ -80,8 +95,14 @@
 
     <div class="card">
       <h2>Try it</h2>
-      <p style="margin:0 0 6px;font-size:15.5px;">Click the widget in the corner and speak with Anna. She is set up with a sample owner profile so the conversation feels real.</p>
-      <p class="cta-note">Sample profile: Herr Thomas Müller, Bahnhofstrasse 12, 8001 Zürich. The agent speaks German.</p>
+      <p style="margin:0 0 16px;font-size:15.5px;">Enter a mobile number to receive the activation SMS, then load Anna and start the call. She is set up with a sample owner profile so the conversation feels real.</p>
+      <div class="field">
+        <label for="mobile">Your mobile number (the SMS goes here)</label>
+        <input id="mobile" type="tel" placeholder="+41 79 123 45 67" autocomplete="tel" />
+      </div>
+      <button id="startDemo" class="btn">Load the agent</button>
+      <p id="startNote" class="cta-note"></p>
+      <p class="cta-note">Sample profile: Herr Thomas Müller, Bahnhofstrasse 12, 8001 Zürich. The agent speaks German. When you express interest, Anna texts the cockpit activation link to the number above.</p>
     </div>
 
     <div class="card">
@@ -112,12 +133,49 @@
   </div>
 
   <script src="https://unpkg.com/@elevenlabs/convai-widget-embed" async type="text/javascript"></script>
-  <elevenlabs-convai
-    agent-id="agent_1101kw9w2jhjfk6tseg7hyqv997v"
-    server-location="eu-residency"
-    language="de"
-    first-message="Guten Tag, hier ist Anna von MoneyPark, ich melde mich bei Ihnen mit einer guten Nachricht zu Ihrer Immobilie. Spreche ich mit Thomas Müller?"
-    dynamic-variables='{"customer_full_name":"Thomas Müller","customer_first_name":"Thomas","title":"Herr","last_name":"Müller","advisor_name":"","property_address":"Bahnhofstrasse 12, 8001 Zürich","current_value_estimate":"1,18 Mio. CHF","value_change_hint":"leicht gestiegen"}'
-  ></elevenlabs-convai>
+  <script>
+    (function () {
+      var btn = document.getElementById('startDemo');
+      var input = document.getElementById('mobile');
+      var note = document.getElementById('startNote');
+
+      btn.addEventListener('click', function () {
+        var phone = (input.value || '').trim();
+        if (!phone) {
+          note.textContent = 'Please enter a mobile number first.';
+          input.focus();
+          return;
+        }
+        if (document.querySelector('elevenlabs-convai')) {
+          note.textContent = 'The agent is already loaded (bottom-right). Restart the call there to use a new number.';
+          return;
+        }
+
+        var dynamicVariables = {
+          customer_full_name: 'Thomas Müller',
+          customer_first_name: 'Thomas',
+          title: 'Herr',
+          last_name: 'Müller',
+          advisor_name: '',
+          property_address: 'Bahnhofstrasse 12, 8001 Zürich',
+          current_value_estimate: '1,18 Mio. CHF',
+          value_change_hint: 'leicht gestiegen',
+          customer_phone: phone
+        };
+
+        var el = document.createElement('elevenlabs-convai');
+        el.setAttribute('agent-id', 'agent_1101kw9w2jhjfk6tseg7hyqv997v');
+        el.setAttribute('server-location', 'eu-residency');
+        el.setAttribute('language', 'de');
+        el.setAttribute('first-message', 'Guten Tag, hier ist Anna von MoneyPark, ich melde mich bei Ihnen mit einer guten Nachricht zu Ihrer Immobilie. Spreche ich mit Thomas Müller?');
+        el.setAttribute('dynamic-variables', JSON.stringify(dynamicVariables));
+        document.body.appendChild(el);
+
+        note.textContent = 'Agent loaded. Open it bottom-right and start the call. The activation SMS will go to ' + phone + '.';
+        btn.disabled = true;
+        input.disabled = true;
+      });
+    })();
+  </script>
 </body>
 </html>
