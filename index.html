@@ -158,7 +158,7 @@
     server-location="eu-residency"
     language="de"
     first-message="Guten Tag {{customer_first_name}}, schön, dass Sie da sind. Ich bin Anna, die virtuelle Assistentin von MoneyPark. Es gibt ein paar Neuigkeiten zu Ihrer Immobilie an der {{property_address}}, aber zuerst würde mich interessieren: wie geht es Ihnen eigentlich mit Ihrem Zuhause?"
-    dynamic-variables='{"customer_full_name":"Thomas Müller","customer_first_name":"Thomas","title":"Herr","last_name":"Müller","advisor_name":"","property_address":"Bahnhofstrasse 12, 8001 Zürich","current_value_estimate":"1,18 Mio. CHF","value_change_hint":"leicht gestiegen","years_since_purchase":"4","customer_phone":""}'
+    dynamic-variables='{"offerId":"mp-demo-owner-001","mortgage_year":"2021","months_to_expiry":"","language":"de","churned":"false","customer_full_name":"Thomas Müller","customer_first_name":"Thomas","title":"Herr","last_name":"Müller","advisor_name":"","property_address":"Bahnhofstrasse 12, 8001 Zürich","current_value_estimate":"1,18 Mio. CHF","value_change_hint":"leicht gestiegen","customer_phone":""}'
   ></elevenlabs-convai>
   <script src="https://unpkg.com/@elevenlabs/convai-widget-embed" async type="text/javascript"></script>
   <script>
@@ -167,7 +167,14 @@
       var note = document.getElementById('startNote');
       var el = document.getElementById('mpreAgent');
 
+      // Same variable contract as the MoneyPark refinance agent (offerId, mortgage_year,
+      // months_to_expiry, language, churned) plus the owner-specific personalization.
       var base = {
+        offerId: 'mp-demo-owner-001',
+        mortgage_year: '2021',
+        months_to_expiry: '',
+        language: 'de',
+        churned: 'false',
         customer_full_name: 'Thomas Müller',
         customer_first_name: 'Thomas',
         title: 'Herr',
@@ -175,13 +182,17 @@
         advisor_name: '',
         property_address: 'Bahnhofstrasse 12, 8001 Zürich',
         current_value_estimate: '1,18 Mio. CHF',
-        value_change_hint: 'leicht gestiegen',
-        years_since_purchase: '4'
+        value_change_hint: 'leicht gestiegen'
       };
 
-      // In production the MoneyPark email deep-link carries the owner's mobile, e.g. ...?phone=+41791234567
-      // For the demo we also accept it via the URL so a tester never lands with an empty number.
+      // In production the MoneyPark email deep-link carries these, e.g.
+      // ...?phone=+41791234567&offerId=...&mortgage_year=2021&months_to_expiry=8&language=de
+      // For the demo we accept them via the URL so a tester never lands with empty values.
       var params = new URLSearchParams(window.location.search);
+      ['offerId', 'mortgage_year', 'months_to_expiry', 'language', 'churned'].forEach(function (k) {
+        var v = params.get(k);
+        if (v != null && v !== '') { base[k] = v; }
+      });
       var DEMO_DEFAULT_PHONE = ''; // set to a real test mobile to pre-fill by default
       var initial = (params.get('phone') || DEMO_DEFAULT_PHONE || '').trim();
       if (initial) { input.value = initial; }
