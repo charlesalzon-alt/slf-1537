@@ -125,9 +125,9 @@
       <h2>How it flows</h2>
       <ol class="steps">
         <li><span class="n">1</span><span class="t"><b>Email → microsite:</b> a MoneyPark automation emails the owner; one click brings them to this page.</span></li>
-        <li><span class="n">2</span><span class="t"><b>Anna welcomes them</b> (inbound, opted-in) and discloses she is a virtual assistant.</span></li>
-        <li><span class="n">3</span><span class="t"><b>Delivers value first:</b> the fresh estimate and how it has moved, then asks how satisfied they are with their purchase (CSAT).</span></li>
-        <li><span class="n">4</span><span class="t"><b>Activates the cockpit:</b> sends the one-tap login link by SMS and can guide the first login.</span></li>
+        <li><span class="n">2</span><span class="t"><b>Anna checks in</b> (inbound, opted-in): discloses she is a virtual assistant and opens with a warm question about how they are getting on with their home.</span></li>
+        <li><span class="n">3</span><span class="t"><b>Delivers value & reads the room:</b> the fresh estimate and how it has moved, gauges satisfaction and plans (keep / sell / refinance), and adapts depth to how much the owner engages.</span></li>
+        <li><span class="n">4</span><span class="t"><b>Activates the cockpit:</b> sends the one-tap login link by SMS and can guide the first login. Established owners may also get a light advisor follow-up on refinancing / selling.</span></li>
       </ol>
     </div>
 
@@ -157,8 +157,8 @@
     agent-id="agent_1101kw9w2jhjfk6tseg7hyqv997v"
     server-location="eu-residency"
     language="de"
-    first-message="Guten Tag {{customer_first_name}}, schön, dass Sie da sind. Ich bin Anna, die virtuelle Assistentin von MoneyPark, und ich habe gute Neuigkeiten zu Ihrer Immobilie an der {{property_address}}: eine frische Wertschätzung. Darf ich sie Ihnen kurz zeigen?"
-    dynamic-variables='{"customer_full_name":"Thomas Müller","customer_first_name":"Thomas","title":"Herr","last_name":"Müller","advisor_name":"","property_address":"Bahnhofstrasse 12, 8001 Zürich","current_value_estimate":"1,18 Mio. CHF","value_change_hint":"leicht gestiegen","customer_phone":""}'
+    first-message="Guten Tag {{customer_first_name}}, schön, dass Sie da sind. Ich bin Anna, die virtuelle Assistentin von MoneyPark. Es gibt ein paar Neuigkeiten zu Ihrer Immobilie an der {{property_address}}, aber zuerst würde mich interessieren: wie geht es Ihnen eigentlich mit Ihrem Zuhause?"
+    dynamic-variables='{"customer_full_name":"Thomas Müller","customer_first_name":"Thomas","title":"Herr","last_name":"Müller","advisor_name":"","property_address":"Bahnhofstrasse 12, 8001 Zürich","current_value_estimate":"1,18 Mio. CHF","value_change_hint":"leicht gestiegen","years_since_purchase":"4","customer_phone":""}'
   ></elevenlabs-convai>
   <script src="https://unpkg.com/@elevenlabs/convai-widget-embed" async type="text/javascript"></script>
   <script>
@@ -175,8 +175,16 @@
         advisor_name: '',
         property_address: 'Bahnhofstrasse 12, 8001 Zürich',
         current_value_estimate: '1,18 Mio. CHF',
-        value_change_hint: 'leicht gestiegen'
+        value_change_hint: 'leicht gestiegen',
+        years_since_purchase: '4'
       };
+
+      // In production the MoneyPark email deep-link carries the owner's mobile, e.g. ...?phone=+41791234567
+      // For the demo we also accept it via the URL so a tester never lands with an empty number.
+      var params = new URLSearchParams(window.location.search);
+      var DEMO_DEFAULT_PHONE = ''; // set to a real test mobile to pre-fill by default
+      var initial = (params.get('phone') || DEMO_DEFAULT_PHONE || '').trim();
+      if (initial) { input.value = initial; }
 
       function sync() {
         var phone = (input.value || '').trim();
@@ -184,7 +192,7 @@
         el.setAttribute('dynamic-variables', JSON.stringify(dv));
         note.textContent = phone
           ? 'The activation SMS will go to ' + phone + '. Start the conversation in the widget (bottom-right).'
-          : '';
+          : 'Enter a mobile number above (or open this page with ?phone=+41... ) so Anna can text the cockpit link.';
       }
 
       input.addEventListener('input', sync);
