@@ -94,17 +94,17 @@
 
     <div class="ribbon">
       <span class="ic">✉️</span>
-      <span>You arrived here from your <b>MoneyPark property update email</b>. This is the landing page (microsite) where you can talk to Anna.</span>
+      <span>You arrived here from your <b>MoneyPark property update email</b>. This is the landing page (microsite) where you can talk to Maia.</span>
     </div>
 
     <h1>Your home has a fresh valuation</h1>
-    <p class="sub">Say hello to Anna, MoneyPark's virtual assistant. She shows you your updated property value, how the market is moving, and helps you into your personal MoneyPark cockpit, all in one short conversation. No outbound call: you are here because you chose to be.</p>
+    <p class="sub">Say hello to Maia, MoneyPark's virtual assistant. She shows you your updated property value, how the market is moving, and helps you into your personal MoneyPark cockpit, all in one short conversation. No outbound call: you are here because you chose to be.</p>
 
     <div class="card">
-      <h2>Why talk to Anna</h2>
+      <h2>Why talk to Maia</h2>
       <ul class="benefits">
         <li><span class="ic">📈</span><span><b>See your fresh valuation</b> and how it has moved since you bought your property.</span></li>
-        <li><span class="ic">🔑</span><span><b>One-tap access to your cockpit</b>, Anna sends a pre-authenticated login link by SMS, no password needed.</span></li>
+        <li><span class="ic">🔑</span><span><b>One-tap access to your cockpit</b>, Maia sends a pre-authenticated login link by SMS, no password needed.</span></li>
         <li><span class="ic">🎯</span><span><b>A sharper estimate:</b> add a few property details in your cockpit and the value gets more precise.</span></li>
         <li><span class="ic">💬</span><span><b>Ask anything</b> about your property, the market, or your mortgage, any time, day or night.</span></li>
       </ul>
@@ -112,20 +112,20 @@
 
     <div class="card">
       <h2>Start the conversation</h2>
-      <p style="margin:0 0 16px;font-size:15.5px;">Enter a mobile number to receive the cockpit activation SMS, then start chatting with Anna using the widget at the bottom-right. She is set up with a sample owner profile so the conversation feels real.</p>
+      <p style="margin:0 0 16px;font-size:15.5px;">Enter a mobile number to receive the cockpit activation SMS, then start chatting with Maia using the widget at the bottom-right. She is set up with a sample owner profile so the conversation feels real.</p>
       <div class="field">
         <label for="mobile">Your mobile number (the activation SMS goes here)</label>
         <input id="mobile" type="tel" placeholder="+41 79 123 45 67" autocomplete="tel" />
       </div>
       <p id="startNote" class="cta-note"></p>
-      <p class="cta-note">Sample profile: Herr Thomas Müller, Bahnhofstrasse 12, 8001 Zürich. Anna defaults to German but follows the language you pick in the widget's language selector (German or English), and stays in it for the whole conversation. When you express interest, she texts the cockpit activation link to the number above.</p>
+      <p class="cta-note">Sample profile: Herr Thomas Müller, Bahnhofstrasse 12, 8001 Zürich. Maia defaults to German but follows the language you pick in the widget's language selector (German or English), and stays in it for the whole conversation. When you express interest, she texts the cockpit activation link to the number above.</p>
     </div>
 
     <div class="card">
       <h2>How it flows</h2>
       <ol class="steps">
         <li><span class="n">1</span><span class="t"><b>Email → microsite:</b> a MoneyPark automation emails the owner; one click brings them to this page.</span></li>
-        <li><span class="n">2</span><span class="t"><b>Anna checks in</b> (inbound, opted-in): discloses she is a virtual assistant and opens with a warm question about how they are getting on with their home.</span></li>
+        <li><span class="n">2</span><span class="t"><b>Maia checks in</b> (inbound, opted-in): discloses she is a virtual assistant and opens with a warm question about how they are getting on with their home.</span></li>
         <li><span class="n">3</span><span class="t"><b>Delivers value & reads the room:</b> the fresh estimate and how it has moved, gauges satisfaction and plans (keep / sell / refinance), and adapts depth to how much the owner engages.</span></li>
         <li><span class="n">4</span><span class="t"><b>Activates the cockpit:</b> sends the one-tap login link by SMS and can guide the first login. Established owners may also get a light advisor follow-up on refinancing / selling.</span></li>
       </ol>
@@ -135,7 +135,7 @@
       <h2>Configuration</h2>
       <dl class="meta">
         <div><dt>Persona</dt><dd>Owners (cockpit never activated)</dd></div>
-        <div><dt>Voice</dt><dd>Anna (shared with refinance agent)</dd></div>
+        <div><dt>Voice</dt><dd>Maia (shared with refinance agent)</dd></div>
         <div><dt>Channel</dt><dd>Inbound microsite (email-triggered)</dd></div>
         <div><dt>Languages</dt><dd>German + English (FR / IT to follow)</dd></div>
         <div><dt>Goal</dt><dd>Cockpit activation + CSAT</dd></div>
@@ -144,11 +144,12 @@
     </div>
 
     <div class="disclaimer">
-      Anna is a virtual assistant, not a human. Your data is processed securely by MoneyPark in accordance with GDPR / nDSG. You can ask to speak with a MoneyPark advisor at any time. Same consent model as the MoneyPark refinance microsite: inbound only, you opt in by starting the conversation here.
+      Maia is a virtual assistant, not a human. Your data is processed securely by MoneyPark in accordance with GDPR / nDSG. You can ask to speak with a MoneyPark advisor at any time. Same consent model as the MoneyPark refinance microsite: inbound only, you opt in by starting the conversation here.
     </div>
 
     <footer>
-      Internal prototype for the MoneyPark MPRE activation work, in the spirit of the refinance microsite. Not for public distribution.
+      Internal prototype for the MoneyPark MPRE activation work, in the spirit of the refinance microsite. Not for public distribution.<br />
+      Testing the text-only channel instead? Use the <a href="sms/">Maia SMS test console</a>.
     </footer>
   </div>
 
@@ -157,7 +158,7 @@
     agent-id="agent_1101kw9w2jhjfk6tseg7hyqv997v"
     server-location="eu-residency"
     language="de"
-    first-message="Guten Tag {{customer_first_name}}, schön, dass Sie da sind. Ich bin Anna, die virtuelle Assistentin von MoneyPark. Es gibt ein paar Neuigkeiten zu Ihrer Immobilie an der {{property_address}}, aber zuerst würde mich interessieren: wie geht es Ihnen eigentlich mit Ihrem Zuhause?"
+    first-message="Guten Tag {{customer_first_name}}, schön, dass Sie da sind. Ich bin Maia, die virtuelle Assistentin von MoneyPark. Es gibt ein paar Neuigkeiten zu Ihrer Immobilie an der {{property_address}}, aber zuerst würde mich interessieren: wie geht es Ihnen eigentlich mit Ihrem Zuhause?"
     dynamic-variables='{"offerId":"mp-demo-owner-001","mortgage_year":"2021","months_to_expiry":"","language":"de","churned":"false","customer_full_name":"Thomas Müller","customer_first_name":"Thomas","title":"Herr","last_name":"Müller","advisor_name":"","property_address":"Bahnhofstrasse 12, 8001 Zürich","current_value_estimate":"1,18 Mio. CHF","value_change_hint":"leicht gestiegen","customer_phone":""}'
   ></elevenlabs-convai>
   <script src="https://unpkg.com/@elevenlabs/convai-widget-embed" async type="text/javascript"></script>
@@ -203,7 +204,7 @@
         el.setAttribute('dynamic-variables', JSON.stringify(dv));
         note.textContent = phone
           ? 'The activation SMS will go to ' + phone + '. Start the conversation in the widget (bottom-right).'
-          : 'Enter a mobile number above (or open this page with ?phone=+41... ) so Anna can text the cockpit link.';
+          : 'Enter a mobile number above (or open this page with ?phone=+41... ) so Maia can text the cockpit link.';
       }
 
       input.addEventListener('input', sync);
