@@ -37,7 +37,7 @@
       line-height: 1.55;
       -webkit-font-smoothing: antialiased;
     }
-    .wrap { max-width: 760px; margin: 0 auto; padding: 40px 20px 96px; }
+    .wrap { max-width: 800px; margin: 0 auto; padding: 40px 20px 96px; }
     header { margin-bottom: 8px; }
     .brand {
       display: inline-flex; align-items: center; gap: 10px;
@@ -45,7 +45,7 @@
     }
     .brand .dot { width: 12px; height: 12px; border-radius: 50%; background: var(--mp-blue); display: inline-block; }
     .ribbon {
-      display: flex; align-items: center; gap: 10px;
+      display: flex; align-items: flex-start; gap: 10px;
       background: var(--mp-soft-bg); border: 1px solid var(--mp-soft-line); color: var(--mp-soft-ink);
       border-radius: 12px; padding: 12px 16px; font-size: 14px; margin: 22px 0 6px;
     }
@@ -59,18 +59,32 @@
     .card h2 { font-size: 14px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--mp-muted); margin: 0 0 16px; }
     .card p.hint { margin: -6px 0 18px; font-size: 14.5px; color: var(--mp-muted); }
     .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 18px; }
-    @media (max-width: 560px) { .grid2 { grid-template-columns: 1fr; } }
+    @media (max-width: 580px) { .grid2 { grid-template-columns: 1fr; } }
     .field { margin: 0 0 14px; }
     .field label { display: block; font-size: 13px; color: var(--mp-muted); margin: 0 0 6px; font-weight: 600; }
-    .field input, .field select {
+    .field input, .field select, .field textarea {
       width: 100%; padding: 12px 14px; font-size: 16px; border: 1px solid var(--mp-line);
       border-radius: 10px; outline: none; background: #fff; color: var(--mp-ink);
-      transition: border-color .15s, box-shadow .15s;
+      font-family: inherit; transition: border-color .15s, box-shadow .15s;
     }
-    .field input:focus, .field select:focus { border-color: var(--mp-blue); box-shadow: 0 0 0 3px rgba(31,111,235,0.15); }
+    .field textarea { min-height: 84px; font-size: 14.5px; line-height: 1.5; resize: vertical; }
+    .field input:focus, .field select:focus, .field textarea:focus {
+      border-color: var(--mp-blue); box-shadow: 0 0 0 3px rgba(31,111,235,0.15);
+    }
     .field .sub-label { font-size: 12.5px; color: var(--mp-muted); margin: 6px 0 0; font-weight: 400; }
-    .check { display: flex; gap: 10px; align-items: flex-start; font-size: 14.5px; margin: 4px 0 20px; }
-    .check input { margin-top: 3px; }
+    .modes { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 0 0 22px; }
+    @media (max-width: 580px) { .modes { grid-template-columns: 1fr; } }
+    .modes label {
+      display: block; border: 1px solid var(--mp-line); border-radius: 12px; padding: 14px 16px;
+      cursor: pointer; background: #fafbfe; transition: border-color .15s, background .15s;
+    }
+    .modes label:hover { border-color: var(--mp-soft-line); }
+    .modes input { position: absolute; opacity: 0; pointer-events: none; }
+    .modes label.on { border-color: var(--mp-blue); background: var(--mp-soft-bg); box-shadow: 0 0 0 3px rgba(31,111,235,0.12); }
+    .modes .t { font-weight: 650; font-size: 15px; display: block; }
+    .modes .d { font-size: 13px; color: var(--mp-muted); }
+    .check { display: flex; gap: 10px; align-items: flex-start; font-size: 14.5px; margin: 4px 0 18px; }
+    .check input { margin-top: 3px; flex: 0 0 auto; }
     button {
       width: 100%; padding: 15px 18px; font-size: 16.5px; font-weight: 650; color: #fff;
       background: var(--mp-blue); border: 0; border-radius: 12px; cursor: pointer;
@@ -79,6 +93,11 @@
     button:hover { background: var(--mp-blue-dark); }
     button:active { transform: translateY(1px); }
     button[disabled] { background: #9db8e4; cursor: progress; }
+    button.ghost {
+      background: #fff; color: var(--mp-blue-dark); border: 1px solid var(--mp-soft-line);
+      font-size: 15px; padding: 12px 16px; width: auto;
+    }
+    button.ghost:hover { background: var(--mp-soft-bg); }
     .result {
       margin: 18px 0 0; padding: 16px 18px; border-radius: 12px; font-size: 14.5px;
       border: 1px solid var(--mp-line); background: #fafbfe; display: none;
@@ -91,12 +110,35 @@
       background: #fff; border: 1px solid rgba(13,27,42,0.12); border-radius: 10px;
       padding: 12px 14px; margin: 10px 0 0; color: var(--mp-ink); font-size: 15px;
     }
-    .result .meta-line { font-size: 13px; opacity: .85; margin: 8px 0 0; }
+    .idtag {
+      display: inline-block; font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      background: #fff; border: 1px solid rgba(13,27,42,0.15); border-radius: 7px;
+      padding: 2px 8px; font-size: 14px; color: var(--mp-ink);
+    }
     .warn {
       background: var(--mp-warn-bg); border: 1px solid var(--mp-warn-line); color: var(--mp-warn-ink);
       border-radius: 12px; padding: 16px 18px; font-size: 14px; margin-bottom: 22px;
     }
-    .warn b { font-weight: 700; }
+    .dossier {
+      border: 1px solid var(--mp-line); border-radius: 12px; padding: 14px 16px; margin: 0 0 12px;
+      background: #fafbfe; font-size: 14.5px;
+    }
+    .dossier.focus { border-color: var(--mp-soft-line); background: var(--mp-soft-bg); }
+    .dossier .h { font-weight: 650; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    .dossier .l { color: var(--mp-muted); font-size: 13.5px; margin-top: 4px; }
+    .pill {
+      font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em;
+      border-radius: 999px; padding: 2px 8px; background: var(--mp-blue); color: #fff;
+    }
+    .timeline { margin: 0; padding: 0; list-style: none; }
+    .timeline li {
+      display: grid; grid-template-columns: 92px 1fr; gap: 12px; font-size: 14px;
+      padding: 9px 0; border-bottom: 1px solid var(--mp-line);
+    }
+    .timeline li:last-child { border-bottom: 0; }
+    .timeline .when { color: var(--mp-muted); font-size: 13px; }
+    .timeline .what b { font-weight: 650; }
+    .timeline .what .body { color: var(--mp-muted); }
     .steps { margin: 0; padding: 0; list-style: none; display: grid; gap: 14px; }
     .steps li { display: flex; gap: 12px; align-items: flex-start; }
     .steps .n {
@@ -106,8 +148,9 @@
     .steps .t { font-size: 15.5px; }
     .steps .t b { font-weight: 650; }
     footer { color: var(--mp-muted); font-size: 13px; margin-top: 36px; text-align: center; }
-    footer a { color: var(--mp-blue-dark); }
     code { background: #eef2f8; padding: 1px 6px; border-radius: 5px; font-size: 13px; }
+    form[data-mode="new"] .only-existing { display: none; }
+    form[data-mode="existing"] .only-new { display: none; }
   </style>
 </head>
 <body>
@@ -118,45 +161,50 @@
 
     <div class="ribbon">
       <span>💬</span>
-      <span>Internal test console for the <b>text-only Maia channel</b>: build a dossier, trigger the opening SMS, then reply from your phone and the conversation continues by SMS.</span>
+      <span>Internal test console for the <b>text-only Maia channel</b>. Create a lead and its dossier and have Maia text you about it, or pick up an existing lead by its id and let her carry on where the conversation stopped.</span>
     </div>
 
     <h1>Trigger an SMS conversation with Maia</h1>
-    <p class="sub">This stands in for the MoneyPark automation. In production these fields come from the MoneyPark CRM; here you fill them in so the thread is grounded in a real dossier. Maia never invents a figure, so whatever you enter is what she works with.</p>
+    <p class="sub">This stands in for the MoneyPark automation. Maia works from a <b>lead</b>: the person, the one or more <b>dossiers</b> attached to them, and the <b>activity</b> already recorded against those dossiers. She never invents a figure, so what you put in here is what she has to work with.</p>
 
-    <form id="form" novalidate>
+    <form id="form" data-mode="new" novalidate>
       <div class="card">
-        <h2>The owner and the property</h2>
-        <p class="hint">The opening SMS is templated and uses only the first name, the street, the advisor and the mortgage year. The remaining fields shape what Maia can say once the owner replies.</p>
-        <div class="grid2">
+        <h2>What do you want to test</h2>
+        <div class="modes">
+          <label id="modeNewLabel" class="on">
+            <input type="radio" name="mode" value="new" checked />
+            <span class="t">A new lead</span>
+            <span class="d">Create the lead and its first dossier, then get the opening SMS.</span>
+          </label>
+          <label id="modeExistingLabel">
+            <input type="radio" name="mode" value="existing" />
+            <span class="t">An existing lead</span>
+            <span class="d">Enter a leadId. Maia picks the conversation back up from its history.</span>
+          </label>
+        </div>
+
+        <div class="only-existing">
+          <div class="field">
+            <label for="leadId">Lead id</label>
+            <input id="leadId" name="leadId" placeholder="LEAD-XXXXXX" autocapitalize="characters" />
+            <p class="sub-label">The id is returned every time you trigger a message, and it is authoritative: a leadId that does not exist is refused rather than matched on the phone number.</p>
+          </div>
+          <button type="button" class="ghost" id="load">Show me what Maia knows</button>
+        </div>
+
+        <div class="only-new grid2">
           <div class="field">
             <label for="first">First name</label>
-            <input id="first" name="customer_first_name" value="Thomas" required />
+            <input id="first" name="customer_first_name" value="Thomas" />
           </div>
           <div class="field">
-            <label for="offerId">Offer ID (dossier reference)</label>
-            <input id="offerId" name="offerId" value="mp-demo-owner-001" required />
+            <label for="last">Last name</label>
+            <input id="last" name="customer_last_name" value="Keller" />
           </div>
           <div class="field">
-            <label for="street">Property street</label>
-            <input id="street" name="property_street" value="Bahnhofstrasse 12" required />
-          </div>
-          <div class="field">
-            <label for="address">Full address</label>
-            <input id="address" name="property_address" value="Bahnhofstrasse 12, 8001 Zürich" />
-          </div>
-          <div class="field">
-            <label for="advisor">Advisor who arranged the mortgage</label>
-            <input id="advisor" name="advisor_name" value="Thomas Keller" required />
-          </div>
-          <div class="field">
-            <label for="year">Mortgage year</label>
-            <input id="year" name="mortgage_year" value="2021" inputmode="numeric" required />
-          </div>
-          <div class="field">
-            <label for="expiry">Months to expiry</label>
-            <input id="expiry" name="months_to_expiry" value="8" inputmode="numeric" />
-            <p class="sub-label">Drives the lifecycle branch: a recent mortgage keeps Maia on the cockpit, an older one lets her raise refinancing once.</p>
+            <label for="phone">Mobile number</label>
+            <input id="phone" name="customer_phone" type="tel" placeholder="+41 79 123 45 67" autocomplete="tel" />
+            <p class="sub-label"><b>Use a Swiss mobile (+41 7x) if you can.</b> Read the note at the bottom before testing on a French number.</p>
           </div>
           <div class="field">
             <label for="language">Language on file</label>
@@ -171,10 +219,44 @@
         </div>
       </div>
 
+      <div class="card" id="leadCard" style="display:none">
+        <h2>What Maia knows about this lead</h2>
+        <div id="leadView"></div>
+      </div>
+
       <div class="card">
-        <h2>The valuation</h2>
-        <p class="hint">Maia ties every mention of the value back to the cockpit, where the estimate gets sharper once the owner adds property details.</p>
-        <div class="grid2">
+        <h2>The dossier</h2>
+        <p class="hint">One dossier is one property with its mortgage, its valuation and its own cockpit state. <b>A lead can hold several.</b> Pushing the same offer id twice updates that dossier instead of creating a second one.</p>
+        <label class="check only-existing">
+          <input id="addDossier" type="checkbox" />
+          <span>Attach another dossier to this lead. Leave this off and Maia simply resumes on the dossier she was already discussing.</span>
+        </label>
+        <div id="dossierFields" class="grid2">
+          <div class="field">
+            <label for="offerId">Offer id (the dossier key)</label>
+            <input id="offerId" name="offerId" value="MP-OFFER-8891" />
+          </div>
+          <div class="field">
+            <label for="street">Property street</label>
+            <input id="street" name="property_street" value="Bahnhofstrasse 12" />
+          </div>
+          <div class="field">
+            <label for="address">Full address</label>
+            <input id="address" name="property_address" value="Bahnhofstrasse 12, 8001 Zürich" />
+          </div>
+          <div class="field">
+            <label for="advisor">Advisor who arranged the mortgage</label>
+            <input id="advisor" name="advisor_name" value="Daniel Weber" />
+          </div>
+          <div class="field">
+            <label for="year">Mortgage year</label>
+            <input id="year" name="mortgage_year" value="2021" inputmode="numeric" />
+          </div>
+          <div class="field">
+            <label for="expiry">Months to expiry</label>
+            <input id="expiry" name="months_to_expiry" value="8" inputmode="numeric" />
+            <p class="sub-label">Read per dossier: a recent mortgage keeps Maia on the cockpit, an older one lets her raise refinancing once.</p>
+          </div>
           <div class="field">
             <label for="value">Current estimate</label>
             <input id="value" name="current_value_estimate" value="1.18m CHF" />
@@ -196,21 +278,28 @@
           <div class="field">
             <label for="link">Cockpit activation link</label>
             <input id="link" name="cockpit_link" value="https://app.moneypark.ch/de/mein-konto/mpre/dashboard?token=demo" />
-            <p class="sub-label">Sent only when the owner accepts, never in the opener.</p>
+            <p class="sub-label">Tracked per dossier, and sent only when the owner accepts.</p>
           </div>
         </div>
       </div>
 
       <div class="card">
-        <h2>Where to send it</h2>
+        <h2>What already happened</h2>
+        <p class="hint">Give the lead a past, the way the MoneyPark CRM would. Maia reads this as her memory of the relationship: she will not offer something that already went out, and she can refer back to it naturally.</p>
         <div class="field">
-          <label for="phone">Mobile number</label>
-          <input id="phone" name="customer_phone" type="tel" placeholder="+41 79 123 45 67" autocomplete="tel" required />
-          <p class="sub-label"><b>Use a Swiss mobile (+41 7x) if you can.</b> Swiss operators accept our +41 sender, so the thread behaves the way a real owner will see it. Read the note below before testing on a French number.</p>
+          <label for="seed">Known history, one event per line</label>
+          <textarea id="seed" name="seed_activity" placeholder="2026-05-04 | property newsletter opened, no click">2026-05-04 | property newsletter opened, no click
+2026-06-18 | advisor call about the renovation budget, no follow-up
+2026-08-02 | cockpit invitation email sent, never opened</textarea>
+          <p class="sub-label">A line starting with a date keeps that date. Anything else is dated today.</p>
         </div>
+      </div>
+
+      <div class="card">
+        <h2>Send it</h2>
         <label class="check">
-          <input id="reset" type="checkbox" checked />
-          <span>Restart the thread if this number already has one. Leave this on for repeat testing. A number that replied STOP stays blocked either way, which is deliberate.</span>
+          <input id="reset" type="checkbox" />
+          <span>Restart the conversation from the opening message. The lead, its dossiers and its known history stay. <b>An opt-out is never cleared</b>, which is deliberate: a number that replied STOP stays blocked.</span>
         </label>
         <button id="go" type="submit">Trigger SMS from Maïa</button>
         <div id="result" class="result"></div>
@@ -220,7 +309,7 @@
     <div class="warn">
       <b>Testing on a French mobile will look broken, and it is not.</b> French operators forbid A2P
       delivery from a mobile long code, so Twilio reroutes the message through its French notification
-      short code and the handset shows a <code>38xxx</code> sender instead of our Swiss number. The
+      short code and the handset shows a <code>38xxx</code> sender rather than our Swiss number. The
       reply therefore lands in a different thread from the one you texted. Swiss operators accept the
       +41 sender, so this does not happen for a real MoneyPark owner.
     </div>
@@ -228,74 +317,191 @@
     <div class="card">
       <h2>What happens after you trigger</h2>
       <ol class="steps">
-        <li><span class="n">1</span><span class="t"><b>Maia opens the thread</b> with the templated SMS: who she is, that the value moved, and one question. No link, no figure yet.</span></li>
-        <li><span class="n">2</span><span class="t"><b>You reply from your phone.</b> Every reply reaches the agent, which replays the whole thread, so it remembers what was said.</span></li>
-        <li><span class="n">3</span><span class="t"><b>Maia routes on intent:</b> she gives the figure, checks in on the property, offers the cockpit, hands over to an advisor, or closes.</span></li>
-        <li><span class="n">4</span><span class="t"><b>The link is appended by the flow</b>, never written by the model, and only once the owner has clearly accepted.</span></li>
+        <li><span class="n">1</span><span class="t"><b>A new lead gets the templated opener:</b> who Maia is, that the value moved, and one question. No link, no figure yet.</span></li>
+        <li><span class="n">2</span><span class="t"><b>An existing lead gets a re-engagement message written by Maia herself</b>, because she can see where the conversation stopped and what is still open.</span></li>
+        <li><span class="n">3</span><span class="t"><b>You reply from your phone.</b> Every message in and out is logged against the lead, and the whole thread is replayed on each turn, so nothing is forgotten.</span></li>
+        <li><span class="n">4</span><span class="t"><b>She stays on the right property.</b> The activation link, the estimate and the mortgage are tracked per dossier, so accepting for one says nothing about the other.</span></li>
         <li><span class="n">5</span><span class="t"><b>Reply STOP at any point.</b> Opt-out is handled before the model is called, so it cannot be missed.</span></li>
       </ol>
     </div>
 
     <footer>
-      Internal prototype for the MoneyPark MPRE activation work. Every message in and out is logged per
-      dossier for audit. Not for public distribution.
+      Internal prototype for the MoneyPark MPRE activation work. Every exchange is logged per lead for
+      audit. Not for public distribution.
     </footer>
   </div>
 
   <script>
     (function () {
-      var ENDPOINT = 'https://pricehubble.app.n8n.cloud/webhook/mp-maia-sms-init';
+      var INIT = 'https://pricehubble.app.n8n.cloud/webhook/mp-maia-sms-init';
+      var LOOKUP = 'https://pricehubble.app.n8n.cloud/webhook/mp-maia-lead-lookup';
+
       var form = document.getElementById('form');
       var btn = document.getElementById('go');
       var out = document.getElementById('result');
+      var leadCard = document.getElementById('leadCard');
+      var leadView = document.getElementById('leadView');
+      var leadIdInput = document.getElementById('leadId');
+      var addDossier = document.getElementById('addDossier');
+      var dossierFields = document.getElementById('dossierFields');
 
-      // Lets a tester share a ready-made setup, e.g. ?phone=+41791234567&language=de
-      var params = new URLSearchParams(window.location.search);
-      Array.prototype.forEach.call(form.elements, function (el) {
-        if (!el.name) { return; }
-        var v = params.get(el.name);
-        if (v != null && v !== '') { el.value = v; }
-      });
+      function mode() { return form.querySelector('input[name=mode]:checked').value; }
 
-      function show(cls, title, html) {
-        out.className = 'result show ' + cls;
-        out.innerHTML = '<p class="t">' + title + '</p>' + html;
+      function syncMode() {
+        form.setAttribute('data-mode', mode());
+        document.getElementById('modeNewLabel').classList.toggle('on', mode() === 'new');
+        document.getElementById('modeExistingLabel').classList.toggle('on', mode() === 'existing');
+        // On an existing lead the dossier is optional, so it stays out of the way until asked for.
+        dossierFields.style.display = (mode() === 'new' || addDossier.checked) ? '' : 'none';
+        if (mode() === 'new') { leadCard.style.display = 'none'; }
       }
+      form.querySelectorAll('input[name=mode]').forEach(function (r) { r.addEventListener('change', syncMode); });
+      addDossier.addEventListener('change', syncMode);
 
       function esc(s) {
         return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) {
           return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
         });
       }
+      function show(cls, title, html) {
+        out.className = 'result show ' + cls;
+        out.innerHTML = '<p class="t">' + title + '</p>' + html;
+      }
+      function parse(s, fb) { try { return s ? JSON.parse(s) : fb; } catch (e) { return fb; } }
 
-      // Skip reasons come back as flow-internal tokens. Say what each one means in plain words,
-      // otherwise a blocked send reads as a bug.
+      var KINDS = {
+        lead_created: 'Lead created',
+        dossier_added: 'Dossier added',
+        note: 'Known history',
+        sms_out: 'Maia texted',
+        sms_in: 'Owner replied',
+        cockpit_link_sent: 'Activation link sent',
+        opt_out: 'Opted out',
+        advisor_callback: 'Handed to an advisor'
+      };
+
+      function renderLead(row) {
+        if (!row || !row.leadId) {
+          leadView.innerHTML = '<p style="margin:0;color:var(--mp-muted)">No lead found for that id.</p>';
+          leadCard.style.display = '';
+          return;
+        }
+        var dossiers = parse(row.dossiersJson, []);
+        var activity = parse(row.activityJson, []);
+        var h = '';
+        h += '<p style="margin:0 0 16px">' + esc(row.firstName || 'Unknown') + ' ' + esc(row.lastName || '') +
+             ', <span class="idtag">' + esc(row.leadId) + '</span>, ' + esc(row.phone || 'no number') +
+             ', language ' + esc(row.language || '?') + '.<br />' +
+             esc(row.messageCount || 0) + ' messages exchanged' +
+             (row.optOut ? ', <b>opted out</b>' : '') +
+             (row.csat ? '. Satisfaction noted: ' + esc(row.csat) : '') +
+             (row.holdingIntent ? '. Intent: ' + esc(row.holdingIntent) : '') + '</p>';
+
+        h += '<h2 style="margin-top:20px">Dossiers (' + dossiers.length + ')</h2>';
+        if (!dossiers.length) { h += '<p style="margin:0;color:var(--mp-muted)">None attached yet.</p>'; }
+        dossiers.forEach(function (d, i) {
+          var isFocus = i === dossiers.length - 1;
+          h += '<div class="dossier' + (isFocus ? ' focus' : '') + '">' +
+               '<div class="h"><span class="idtag">' + esc(d.dossierId) + '</span> ' +
+               esc(d.property_address || d.property_street || 'unknown address') +
+               (isFocus ? ' <span class="pill">in focus</span>' : '') + '</div>' +
+               '<div class="l">Mortgage ' + esc(d.mortgage_year || '?') + ' via ' + esc(d.advisor_name || 'MoneyPark') +
+               ', ' + esc(d.months_to_expiry || '?') + ' months to expiry. Estimate ' +
+               esc(d.current_value_estimate || 'unknown') + ', ' + esc(d.value_change_hint || 'no direction') + '.</div>' +
+               '<div class="l">Activation link ' + (d.linkSent ? 'already sent' : 'not sent yet') +
+               ', cockpit ' + (d.cockpitActivated ? 'activated' : 'not activated') + '.</div>' +
+               '</div>';
+        });
+
+        h += '<h2 style="margin-top:20px">Activity (' + activity.length + ')</h2>';
+        if (!activity.length) { h += '<p style="margin:0;color:var(--mp-muted)">Nothing recorded yet.</p>'; }
+        else {
+          h += '<ul class="timeline">';
+          activity.slice().reverse().forEach(function (a) {
+            h += '<li><span class="when">' + esc(String(a.atIso || '').slice(0, 10)) + '</span>' +
+                 '<span class="what"><b>' + esc(KINDS[a.kind] || a.kind) + '</b>' +
+                 (a.dossierId ? ' <span class="idtag">' + esc(a.dossierId) + '</span>' : '') +
+                 (a.body ? '<br /><span class="body">' + esc(a.body) + '</span>' : '') + '</span></li>';
+          });
+          h += '</ul>';
+        }
+        leadView.innerHTML = h;
+        leadCard.style.display = '';
+      }
+
+      function loadLead(id, silent) {
+        if (!id) {
+          if (!silent) { show('bad', 'No lead id', '<p style="margin:0">Enter the leadId you want to resume.</p>'); }
+          return Promise.resolve();
+        }
+        return fetch(LOOKUP + '?leadId=' + encodeURIComponent(id))
+          .then(function (r) { return r.json(); })
+          .then(function (d) { renderLead(Array.isArray(d) ? d[0] : d); })
+          .catch(function (err) {
+            if (!silent) { show('bad', 'Could not read the lead', '<p style="margin:0">' + esc(err.message) + '</p>'); }
+          });
+      }
+
+      document.getElementById('load').addEventListener('click', function () {
+        loadLead((leadIdInput.value || '').trim().toUpperCase(), false);
+      });
+
+      // Lets a tester share a ready-made setup, e.g. ?leadId=LEAD-ABC123 or ?customer_phone=%2B41...
+      var params = new URLSearchParams(window.location.search);
+      Array.prototype.forEach.call(form.elements, function (el) {
+        if (!el.name || el.name === 'mode') { return; }
+        var v = params.get(el.name);
+        if (v != null && v !== '') { el.value = v; }
+      });
+      if (params.get('leadId')) {
+        form.querySelector('input[name=mode][value=existing]').checked = true;
+        loadLead(params.get('leadId').toUpperCase(), true);
+      }
+      syncMode();
+
+      // Plain-language equivalents of the flow's skip reasons, so a blocked send never reads as a bug.
       var REASONS = {
+        lead_not_found: 'no lead carries that id',
         missing_or_invalid_mobile: 'the number is missing or too short to be a mobile',
         destination_not_allowed: 'the demo only sends to Swiss, French, German and Austrian numbers',
         valuation_dropped: 'the value went down, and we never open a conversation on a drop',
-        do_not_contact: 'the dossier is flagged do-not-contact',
-        previously_opted_out: 'this number replied STOP before, so it stays blocked',
-        thread_already_open: 'a conversation is already open on this number, tick the restart box'
+        do_not_contact: 'the lead is flagged do-not-contact',
+        previously_opted_out: 'this lead replied STOP before, so it stays blocked',
+        thread_already_open: 'a conversation is already open on this number, so resume it by its leadId instead'
       };
 
       form.addEventListener('submit', function (e) {
         e.preventDefault();
+        var wantDossier = mode() === 'new' || addDossier.checked;
         var payload = { reset: document.getElementById('reset').checked };
+        var DOSSIER = ['offerId', 'property_street', 'property_address', 'advisor_name', 'mortgage_year',
+                       'months_to_expiry', 'current_value_estimate', 'value_change_hint', 'value_direction', 'cockpit_link'];
+        var PERSON = ['customer_first_name', 'customer_last_name', 'customer_phone', 'language'];
+
         Array.prototype.forEach.call(form.elements, function (el) {
-          if (el.name) { payload[el.name] = (el.value || '').trim(); }
+          if (!el.name || el.name === 'mode') { return; }
+          var v = (el.value || '').trim();
+          if (!v) { return; }
+          if (DOSSIER.indexOf(el.name) !== -1 && !wantDossier) { return; }
+          if (PERSON.indexOf(el.name) !== -1 && mode() === 'existing') { return; }
+          if (el.name === 'leadId' && mode() === 'new') { return; }
+          payload[el.name] = el.name === 'leadId' ? v.toUpperCase() : v;
         });
 
-        if (!payload.customer_phone) {
+        if (mode() === 'new' && !payload.customer_phone) {
           show('bad', 'No number', '<p style="margin:0">Enter the mobile number that should receive the SMS.</p>');
+          return;
+        }
+        if (mode() === 'existing' && !payload.leadId) {
+          show('bad', 'No lead id', '<p style="margin:0">Enter the leadId you want to resume.</p>');
           return;
         }
 
         btn.disabled = true;
         btn.textContent = 'Sending…';
-        show('', 'Working', '<p style="margin:0">Opening the thread and handing the message to Twilio.</p>');
+        show('', 'Working', '<p style="margin:0">Resolving the lead and handing the message to Twilio.</p>');
 
-        fetch(ENDPOINT, {
+        fetch(INIT, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
@@ -303,12 +509,21 @@
           if (!r.ok) { throw new Error('the flow answered HTTP ' + r.status); }
           return r.text();
         }).then(function (t) {
-          var d = {};
-          try { d = JSON.parse(t || '{}'); } catch (err) { d = {}; }
+          var d = parse(t, {});
           if (d.sent) {
-            show('ok', 'Sent to ' + esc(d.to),
-              '<p style="margin:0">From ' + esc(d.from) + '. Reply from your phone and the conversation continues.</p>' +
-              '<div class="msg">' + esc(d.message) + '</div>');
+            var what = d.newLead ? 'New lead created' : (d.reengaged ? 'Conversation resumed' : 'Opening message sent');
+            var extra = [];
+            if (!d.newLead && mode() === 'new') { extra.push('this number already had a lead, so Maia reused it'); }
+            if (d.newDossier) { extra.push('a new dossier was attached'); }
+            extra.push(d.dossierCount + (d.dossierCount === 1 ? ' dossier on file' : ' dossiers on file'));
+            show('ok', what + ', sent to ' + esc(d.to),
+              '<p style="margin:0">Lead <span class="idtag">' + esc(d.leadId) + '</span> · dossier <span class="idtag">' +
+              esc(d.dossierId || 'none') + '</span> · from ' + esc(d.from) + '<br />' + esc(extra.join(', ')) + '.</p>' +
+              '<div class="msg">' + esc(d.message) + '</div>' +
+              '<p style="margin:10px 0 0;font-size:13.5px">Reply from your phone and the conversation continues. To come back to this lead later, use its id above.</p>');
+            // Keep the id to hand, and show the log the message just landed in.
+            leadIdInput.value = d.leadId;
+            loadLead(d.leadId, true);
           } else {
             var reasons = String(d.skipped || '').split(',').filter(Boolean).map(function (k) {
               return REASONS[k] || k;
@@ -317,6 +532,7 @@
               reasons.length
                 ? '<p style="margin:0">Because ' + esc(reasons.join('; and ')) + '.</p>'
                 : '<p style="margin:0">The flow ran but decided not to send, and gave no reason.</p>');
+            if (d.leadId) { loadLead(d.leadId, true); }
           }
         }).catch(function (err) {
           show('bad', 'Could not reach the flow',
