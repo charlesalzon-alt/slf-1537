@@ -165,7 +165,7 @@
     </div>
 
     <h1>Trigger an SMS conversation with Maia</h1>
-    <p class="sub">This stands in for the MoneyPark automation. Maia works from a <b>lead</b>: the person, the one or more <b>dossiers</b> attached to them, and the <b>activity</b> already recorded against those dossiers. She never invents a figure, so what you put in here is what she has to work with.</p>
+    <p class="sub">This stands in for the MoneyPark automation. Maia works from a <b>lead</b>: the person, the one or more <b>dossiers</b> attached to them, and the <b>activity</b> already recorded against those dossiers. The lead and the dossier are created in <b>PriceHubble</b> first, and the estimate Maia quotes comes back from the valuation API, so she has nothing to invent.</p>
 
     <form id="form" data-mode="new" novalidate>
       <div class="card">
@@ -174,20 +174,20 @@
           <label id="modeNewLabel" class="on">
             <input type="radio" name="mode" value="new" checked />
             <span class="t">A new lead</span>
-            <span class="d">Create the lead and its first dossier, then get the opening SMS.</span>
+            <span class="d">Create the PriceHubble lead and its dossier, value it, then get the opening SMS.</span>
           </label>
           <label id="modeExistingLabel">
             <input type="radio" name="mode" value="existing" />
             <span class="t">An existing lead</span>
-            <span class="d">Enter a leadId. Maia picks the conversation back up from its history.</span>
+            <span class="d">Enter a lead id. Maia picks the conversation back up from its history.</span>
           </label>
         </div>
 
         <div class="only-existing">
           <div class="field">
             <label for="leadId">Lead id</label>
-            <input id="leadId" name="leadId" placeholder="LEAD-XXXXXX" autocapitalize="characters" />
-            <p class="sub-label">The id is returned every time you trigger a message, and it is authoritative: a leadId that does not exist is refused rather than matched on the phone number.</p>
+            <input id="leadId" name="leadId" placeholder="765650ac-1bd7-426e-b03f-814bbe1d7f4f" />
+            <p class="sub-label">The <b>PriceHubble lead id</b>, returned every time you trigger a message. It is read back from the API, so an id that does not exist is refused rather than quietly matched on the phone number. Ids in the old <code>LEAD-XXXXXX</code> shape still resume, they simply skip the API steps.</p>
           </div>
           <button type="button" class="ghost" id="load">Show me what Maia knows</button>
         </div>
@@ -205,6 +205,11 @@
             <label for="phone">Mobile number</label>
             <input id="phone" name="customer_phone" type="tel" placeholder="+41 79 123 45 67" autocomplete="tel" />
             <p class="sub-label"><b>Use a Swiss mobile (+41 7x) if you can.</b> Read the note at the bottom before testing on a French number.</p>
+          </div>
+          <div class="field">
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" placeholder="thomas.keller@example.com" />
+            <p class="sub-label">Required: the PriceHubble lead API refuses a lead without one. Maia never emails the owner, this is the CRM record.</p>
           </div>
           <div class="field">
             <label for="language">Language on file</label>
@@ -227,6 +232,7 @@
       <div class="card">
         <h2>The dossier</h2>
         <p class="hint">One dossier is one property with its mortgage, its valuation and its own cockpit state. <b>A lead can hold several.</b> Pushing the same offer id twice updates that dossier instead of creating a second one.</p>
+        <p class="hint"><b>You no longer type the estimate.</b> The address below creates a real PriceHubble dossier, and the figure, its confidence and the way it moved over the past year all come back from the valuation API. That is what Maia quotes.</p>
         <label class="check only-existing">
           <input id="addDossier" type="checkbox" />
           <span>Attach another dossier to this lead. Leave this off and Maia simply resumes on the dossier she was already discussing.</span>
@@ -237,12 +243,33 @@
             <input id="offerId" name="offerId" value="MP-OFFER-8891" />
           </div>
           <div class="field">
-            <label for="street">Property street</label>
+            <label for="street">Street and number</label>
             <input id="street" name="property_street" value="Bahnhofstrasse 12" />
           </div>
           <div class="field">
-            <label for="address">Full address</label>
-            <input id="address" name="property_address" value="Bahnhofstrasse 12, 8001 Zürich" />
+            <label for="postcode">Post code</label>
+            <input id="postcode" name="property_post_code" value="8001" />
+            <p class="sub-label">Post code and city are how PriceHubble geocodes the address. Both are required.</p>
+          </div>
+          <div class="field">
+            <label for="city">City</label>
+            <input id="city" name="property_city" value="Zürich" />
+          </div>
+          <div class="field">
+            <label for="ptype">Property type</label>
+            <select id="ptype" name="property_type">
+              <option value="apartment" selected>Apartment</option>
+              <option value="house">House</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="byear">Building year</label>
+            <input id="byear" name="building_year" value="1998" inputmode="numeric" />
+          </div>
+          <div class="field">
+            <label for="area">Living area, m2</label>
+            <input id="area" name="living_area" value="120" inputmode="numeric" />
+            <p class="sub-label">Year and area drive the valuation. Without them the API returns no figure.</p>
           </div>
           <div class="field">
             <label for="advisor">Advisor who arranged the mortgage</label>
@@ -256,24 +283,6 @@
             <label for="expiry">Months to expiry</label>
             <input id="expiry" name="months_to_expiry" value="8" inputmode="numeric" />
             <p class="sub-label">Read per dossier: a recent mortgage keeps Maia on the cockpit, an older one lets her raise refinancing once.</p>
-          </div>
-          <div class="field">
-            <label for="value">Current estimate</label>
-            <input id="value" name="current_value_estimate" value="1.18m CHF" />
-            <p class="sub-label">Leave empty and Maia stays qualitative rather than inventing a figure.</p>
-          </div>
-          <div class="field">
-            <label for="hint">How it moved, in words</label>
-            <input id="hint" name="value_change_hint" value="slightly up" />
-          </div>
-          <div class="field">
-            <label for="direction">Direction of change</label>
-            <select id="direction" name="value_direction">
-              <option value="up" selected>Up</option>
-              <option value="flat">Flat</option>
-              <option value="down">Down (send is blocked on purpose)</option>
-            </select>
-            <p class="sub-label">We never open a conversation on a value that has dropped, same rule as the MoneyPark newsletters.</p>
           </div>
           <div class="field">
             <label for="link">Cockpit activation link</label>
@@ -317,11 +326,13 @@
     <div class="card">
       <h2>What happens after you trigger</h2>
       <ol class="steps">
-        <li><span class="n">1</span><span class="t"><b>A new lead gets the templated opener:</b> who Maia is, that the value moved, and one question. No link, no figure yet.</span></li>
-        <li><span class="n">2</span><span class="t"><b>An existing lead gets a re-engagement message written by Maia herself</b>, because she can see where the conversation stopped and what is still open.</span></li>
-        <li><span class="n">3</span><span class="t"><b>You reply from your phone.</b> Every message in and out is logged against the lead, and the whole thread is replayed on each turn, so nothing is forgotten.</span></li>
-        <li><span class="n">4</span><span class="t"><b>She stays on the right property.</b> The activation link, the estimate and the mortgage are tracked per dossier, so accepting for one says nothing about the other.</span></li>
-        <li><span class="n">5</span><span class="t"><b>Reply STOP at any point.</b> Opt-out is handled before the model is called, so it cannot be missed.</span></li>
+        <li><span class="n">1</span><span class="t"><b>PriceHubble decides whether the lead exists.</b> One lead per mobile number, so triggering twice resumes rather than duplicating. Then the dossier is created and valued. If any of that fails you get the step and the reason, and nothing is sent.</span></li>
+        <li><span class="n">2</span><span class="t"><b>A new lead gets the templated opener:</b> who Maia is, that the value moved, and one question. No link, no figure yet.</span></li>
+        <li><span class="n">3</span><span class="t"><b>An existing lead gets a re-engagement message written by Maia herself</b>, because she can see where the conversation stopped and what is still open.</span></li>
+        <li><span class="n">4</span><span class="t"><b>You reply from your phone.</b> Every message in and out is logged against the lead, and the whole thread is replayed on each turn, so nothing is forgotten.</span></li>
+        <li><span class="n">5</span><span class="t"><b>She stays on the right property, and on the API figure.</b> The estimate, its confidence and the way it moved come from the valuation API, tracked per dossier. A poor-confidence valuation is not quoted at all.</span></li>
+        <li><span class="n">6</span><span class="t"><b>Two messages each way and a recap lands in Charles's inbox:</b> the transcript, the properties, what she picked up about satisfaction and intent. Once per conversation.</span></li>
+        <li><span class="n">7</span><span class="t"><b>Reply STOP at any point.</b> Opt-out is handled before the model is called, so it cannot be missed.</span></li>
       </ol>
     </div>
 
@@ -333,7 +344,9 @@
 
   <script>
     (function () {
-      var INIT = 'https://pricehubble.app.n8n.cloud/webhook/mp-maia-sms-init';
+      // The intake resolves the lead and the dossier against the PriceHubble API, then hands over
+      // to the SMS flow. The console never calls the SMS flow directly any more.
+      var INTAKE = 'https://pricehubble.app.n8n.cloud/webhook/mp-maia-lead-intake';
       var LOOKUP = 'https://pricehubble.app.n8n.cloud/webhook/mp-maia-lead-lookup';
 
       var form = document.getElementById('form');
@@ -368,6 +381,12 @@
         out.innerHTML = '<p class="t">' + title + '</p>' + html;
       }
       function parse(s, fb) { try { return s ? JSON.parse(s) : fb; } catch (e) { return fb; } }
+      // A PriceHubble lead id is a lowercase uuid; the ids minted before the switch look like
+      // LEAD-XXXXXX. Uppercasing a uuid would break the lookup, so only the old shape is folded.
+      function normaliseLeadId(v) {
+        var s = String(v || '').trim();
+        return /^lead-/i.test(s) ? s.toUpperCase() : s;
+      }
 
       var KINDS = {
         lead_created: 'Lead created',
@@ -443,7 +462,7 @@
       }
 
       document.getElementById('load').addEventListener('click', function () {
-        loadLead((leadIdInput.value || '').trim().toUpperCase(), false);
+        loadLead(normaliseLeadId(leadIdInput.value), false);
       });
 
       // Lets a tester share a ready-made setup, e.g. ?leadId=LEAD-ABC123 or ?customer_phone=%2B41...
@@ -455,28 +474,27 @@
       });
       if (params.get('leadId')) {
         form.querySelector('input[name=mode][value=existing]').checked = true;
-        loadLead(params.get('leadId').toUpperCase(), true);
+        loadLead(normaliseLeadId(params.get('leadId')), true);
       }
       syncMode();
 
-      // Plain-language equivalents of the flow's skip reasons, so a blocked send never reads as a bug.
-      var REASONS = {
-        lead_not_found: 'no lead carries that id',
-        missing_or_invalid_mobile: 'the number is missing or too short to be a mobile',
-        destination_not_allowed: 'the demo only sends to Swiss, French, German and Austrian numbers',
-        valuation_dropped: 'the value went down, and we never open a conversation on a drop',
-        do_not_contact: 'the lead is flagged do-not-contact',
-        previously_opted_out: 'this lead replied STOP before, so it stays blocked',
-        thread_already_open: 'a conversation is already open on this number, so resume it by its leadId instead'
+      // The name of each step, for the little pass/fail list under the button. The flow itself
+      // supplies the sentence explaining a failure, so nothing is translated here twice.
+      var STEPS = {
+        resolve_lead: 'PriceHubble lead',
+        create_dossier: 'PriceHubble dossier',
+        valuation: 'Valuation',
+        maia: 'Maia SMS'
       };
 
       form.addEventListener('submit', function (e) {
         e.preventDefault();
         var wantDossier = mode() === 'new' || addDossier.checked;
         var payload = { reset: document.getElementById('reset').checked };
-        var DOSSIER = ['offerId', 'property_street', 'property_address', 'advisor_name', 'mortgage_year',
-                       'months_to_expiry', 'current_value_estimate', 'value_change_hint', 'value_direction', 'cockpit_link'];
-        var PERSON = ['customer_first_name', 'customer_last_name', 'customer_phone', 'language'];
+        var DOSSIER = ['offerId', 'property_street', 'property_post_code', 'property_city',
+                       'property_type', 'building_year', 'living_area', 'advisor_name',
+                       'mortgage_year', 'months_to_expiry', 'cockpit_link'];
+        var PERSON = ['customer_first_name', 'customer_last_name', 'customer_phone', 'email', 'language'];
 
         Array.prototype.forEach.call(form.elements, function (el) {
           if (!el.name || el.name === 'mode') { return; }
@@ -485,54 +503,60 @@
           if (DOSSIER.indexOf(el.name) !== -1 && !wantDossier) { return; }
           if (PERSON.indexOf(el.name) !== -1 && mode() === 'existing') { return; }
           if (el.name === 'leadId' && mode() === 'new') { return; }
-          payload[el.name] = el.name === 'leadId' ? v.toUpperCase() : v;
+          payload[el.name] = el.name === 'leadId' ? normaliseLeadId(v) : v;
         });
 
-        if (mode() === 'new' && !payload.customer_phone) {
-          show('bad', 'No number', '<p style="margin:0">Enter the mobile number that should receive the SMS.</p>');
-          return;
-        }
         if (mode() === 'existing' && !payload.leadId) {
-          show('bad', 'No lead id', '<p style="margin:0">Enter the leadId you want to resume.</p>');
+          show('bad', 'No lead id', '<p style="margin:0">Enter the lead id you want to resume.</p>');
           return;
         }
 
         btn.disabled = true;
         btn.textContent = 'Sending…';
-        show('', 'Working', '<p style="margin:0">Resolving the lead and handing the message to Twilio.</p>');
+        show('', 'Working', '<p style="margin:0">Checking the lead in PriceHubble, valuing the property, then handing the message to Twilio.</p>');
 
-        fetch(INIT, {
+        fetch(INTAKE, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
+          // A refused step answers 422 with the same envelope, so the body is read either way.
           body: JSON.stringify(payload)
-        }).then(function (r) {
-          if (!r.ok) { throw new Error('the flow answered HTTP ' + r.status); }
-          return r.text();
-        }).then(function (t) {
-          var d = parse(t, {});
-          if (d.sent) {
-            var what = d.newLead ? 'New lead created' : (d.reengaged ? 'Conversation resumed' : 'Opening message sent');
-            var extra = [];
-            if (!d.newLead && mode() === 'new') { extra.push('this number already had a lead, so Maia reused it'); }
-            if (d.newDossier) { extra.push('a new dossier was attached'); }
-            extra.push(d.dossierCount + (d.dossierCount === 1 ? ' dossier on file' : ' dossiers on file'));
-            show('ok', what + ', sent to ' + esc(d.to),
-              '<p style="margin:0">Lead <span class="idtag">' + esc(d.leadId) + '</span> · dossier <span class="idtag">' +
-              esc(d.dossierId || 'none') + '</span> · from ' + esc(d.from) + '<br />' + esc(extra.join(', ')) + '.</p>' +
-              '<div class="msg">' + esc(d.message) + '</div>' +
-              '<p style="margin:10px 0 0;font-size:13.5px">Reply from your phone and the conversation continues. To come back to this lead later, use its id above.</p>');
-            // Keep the id to hand, and show the log the message just landed in.
-            leadIdInput.value = d.leadId;
-            loadLead(d.leadId, true);
+        }).then(function (r) { return r.text(); }).then(function (t) {
+          var d = parse(t, null);
+          if (!d) { throw new Error('the flow answered something that is not JSON'); }
+
+          var trail = (d.steps || []).map(function (s) {
+            return '<li>' + (s.ok ? '&#10003; ' : '&#10007; ') + esc(STEPS[s.name] || s.name) +
+                   ' <span class="body">' + esc(s.detail || '') + '</span></li>';
+          }).join('');
+          var stepsHtml = trail ? '<ul class="timeline" style="margin-top:12px">' + trail + '</ul>' : '';
+
+          var m = d.maia || {};
+          var val = d.dossier || {};
+
+          if (d.ok && m.sent) {
+            var what = m.newLead ? 'New lead created' : (m.reengaged ? 'Conversation resumed' : 'Opening message sent');
+            var facts = [];
+            if (!m.newLead && mode() === 'new') { facts.push('this number already had a lead, so Maia reused it'); }
+            if (m.newDossier) { facts.push('a new dossier was attached'); }
+            facts.push(m.dossierCount + (m.dossierCount === 1 ? ' dossier on file' : ' dossiers on file'));
+            var figure = val.valueLabel
+              ? 'Valued at ' + esc(val.valueLabel) + ' (' + esc(val.confidence) + ' confidence), ' + esc(val.changeHint) + '.'
+              : (val.created ? 'No figure quoted: the valuation came back with poor confidence, so Maia stays qualitative.' : '');
+            show('ok', what + ', sent to ' + esc(m.to),
+              '<p style="margin:0">Lead <span class="idtag">' + esc(d.lead.id) + '</span> · dossier <span class="idtag">' +
+              esc(m.dossierId || 'none') + '</span> · from ' + esc(m.from) + '<br />' + esc(facts.join(', ')) + '.' +
+              (figure ? '<br />' + figure : '') + '</p>' +
+              '<div class="msg">' + esc(m.text) + '</div>' + stepsHtml +
+              '<p style="margin:10px 0 0;font-size:13.5px">Reply from your phone and the conversation continues. Keep the lead id above to come back to it. ' +
+              'Once the thread has had two messages each way, a recap email goes to charles.alzon@pricehubble.com.</p>');
+            leadIdInput.value = d.lead.id;
+            loadLead(d.lead.id, true);
           } else {
-            var reasons = String(d.skipped || '').split(',').filter(Boolean).map(function (k) {
-              return REASONS[k] || k;
-            });
-            show('bad', 'Nothing was sent',
-              reasons.length
-                ? '<p style="margin:0">Because ' + esc(reasons.join('; and ')) + '.</p>'
-                : '<p style="margin:0">The flow ran but decided not to send, and gave no reason.</p>');
-            if (d.leadId) { loadLead(d.leadId, true); }
+            var title = d.step === 'prepare' ? 'Something is missing'
+              : d.step === 'caller_error' ? 'Nothing was sent'
+              : d.ok ? 'Nothing was sent' : 'The flow stopped at ' + esc(STEPS[d.step] || d.step || 'an unknown step');
+            show('bad', title, '<p style="margin:0">' + esc(d.message || 'No reason given.') + '</p>' + stepsHtml);
+            if (d.lead && d.lead.id) { loadLead(d.lead.id, true); }
           }
         }).catch(function (err) {
           show('bad', 'Could not reach the flow',
