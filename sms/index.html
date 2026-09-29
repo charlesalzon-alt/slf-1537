@@ -203,8 +203,8 @@
           </div>
           <div class="field">
             <label for="phone">Mobile number</label>
-            <input id="phone" name="customer_phone" type="tel" value="+41 76 601 49 08" placeholder="+41 79 123 45 67" autocomplete="off" />
-            <p class="sub-label"><b>Use a Swiss mobile (+41 7x) if you can.</b> Prefilled with PriceHubble's Swiss tester number, read from a terminal script: put your own mobile here to get the SMS on your phone. Read the note at the bottom before testing on a French number.</p>
+            <input id="phone" name="customer_phone" type="tel" placeholder="+41 7x xxx xx xx" autocomplete="off" required />
+            <p class="sub-label"><b>Use a Swiss mobile (+41 7x) if you can.</b> Read the note at the bottom before testing on a French number.</p>
           </div>
           <div class="field">
             <label for="email">Email</label>
@@ -357,11 +357,23 @@
       var leadIdInput = document.getElementById('leadId');
       var addDossier = document.getElementById('addDossier');
       var dossierFields = document.getElementById('dossierFields');
+      var phoneInput = document.getElementById('phone');
 
       function mode() { return form.querySelector('input[name=mode]:checked').value; }
 
+      // Same normalisation as the Maia flow, then only the mobile ranges it will text (CH, FR, DE, AT).
+      function toE164(v) {
+        var c = String(v || '').replace(/[\s\-().]/g, '');
+        if (c.charAt(0) === '+') { return '+' + c.slice(1).replace(/\D/g, ''); }
+        if (c.slice(0, 2) === '00') { return '+' + c.slice(2).replace(/\D/g, ''); }
+        if (c.charAt(0) === '0') { return '+41' + c.replace(/\D/g, '').slice(1); }
+        return c ? '+' + c.replace(/\D/g, '') : '';
+      }
+      var MOBILE = /^(\+417[5-9]\d{7}|\+33[67]\d{8}|\+491[5-7]\d{8,9}|\+436\d{8,11})$/;
+
       function syncMode() {
         form.setAttribute('data-mode', mode());
+        phoneInput.required = mode() === 'new';
         document.getElementById('modeNewLabel').classList.toggle('on', mode() === 'new');
         document.getElementById('modeExistingLabel').classList.toggle('on', mode() === 'existing');
         // On an existing lead the dossier is optional, so it stays out of the way until asked for.
@@ -508,6 +520,13 @@
 
         if (mode() === 'existing' && !payload.leadId) {
           show('bad', 'No lead id', '<p style="margin:0">Enter the lead id you want to resume.</p>');
+          return;
+        }
+        if (mode() === 'new' && !MOBILE.test(toE164(phoneInput.value))) {
+          show('bad', phoneInput.value.trim() ? 'Not a mobile number' : 'No mobile number',
+               '<p style="margin:0">Enter the mobile Maia should text, in international format, for example ' +
+               '<b>+41 76 123 45 67</b>. Only Swiss, French, German and Austrian mobiles are accepted.</p>');
+          phoneInput.focus();
           return;
         }
 
