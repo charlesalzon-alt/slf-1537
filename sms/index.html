@@ -274,20 +274,16 @@
           <div class="field">
             <label for="advisor">Advisor who arranged the mortgage</label>
             <input id="advisor" name="advisor_name" value="Daniel Weber" />
+            <p class="sub-label">Shown in the recap and the advisor handover only, never in an SMS.</p>
           </div>
           <div class="field">
             <label for="year">Mortgage year</label>
             <input id="year" name="mortgage_year" value="2021" inputmode="numeric" />
           </div>
           <div class="field">
-            <label for="expiry">Months to expiry</label>
-            <input id="expiry" name="months_to_expiry" value="8" inputmode="numeric" />
-            <p class="sub-label">Read per dossier: a recent mortgage keeps Maia on the cockpit, an older one lets her raise refinancing once.</p>
-          </div>
-          <div class="field">
             <label for="link">Cockpit activation link</label>
             <input id="link" name="cockpit_link" value="https://app.moneypark.ch/de/mein-konto/mpre/dashboard?token=demo" />
-            <p class="sub-label">Tracked per dossier, and sent only when the owner accepts.</p>
+            <p class="sub-label">Maia sends it on her own with the value, after a correction and in the close, in the language of the thread.</p>
           </div>
         </div>
       </div>
@@ -308,7 +304,7 @@
         <h2>Send it</h2>
         <label class="check">
           <input id="reset" type="checkbox" />
-          <span>Restart the conversation from the opening message. The lead, its dossiers and its known history stay. <b>An opt-out is never cleared</b>, which is deliberate: a number that replied STOP stays blocked.</span>
+          <span>Restart the conversation from the opening message. The lead, its dossiers and its known history stay. <b>An opt-out is not cleared</b>: a number that replied STOP stays blocked until it texts START.</span>
         </label>
         <button id="go" type="submit">Trigger SMS from Maïa</button>
         <div id="result" class="result"></div>
@@ -328,11 +324,11 @@
       <ol class="steps">
         <li><span class="n">1</span><span class="t"><b>PriceHubble decides whether the lead exists.</b> One lead per mobile number, so triggering twice resumes rather than duplicating. Then the dossier is created and valued. If any of that fails you get the step and the reason, and nothing is sent.</span></li>
         <li><span class="n">2</span><span class="t"><b>A new lead gets the templated opener:</b> who Maia is, that the value moved, and one question. No link, no figure yet.</span></li>
-        <li><span class="n">3</span><span class="t"><b>An existing lead gets a re-engagement message written by Maia herself</b>, because she can see where the conversation stopped and what is still open.</span></li>
+        <li><span class="n">3</span><span class="t"><b>An existing lead, or a restart, gets the opener again</b>, and the thread starts over: at most five messages from Maia, each ending on a JA/NEIN question the owner can also answer in their own words.</span></li>
         <li><span class="n">4</span><span class="t"><b>You reply from your phone.</b> Every message in and out is logged against the lead, and the whole thread is replayed on each turn, so nothing is forgotten.</span></li>
         <li><span class="n">5</span><span class="t"><b>She stays on the right property, and on the API figure.</b> The estimate, its confidence and the way it moved come from the valuation API, tracked per dossier. A poor-confidence valuation is not quoted at all.</span></li>
         <li><span class="n">6</span><span class="t"><b>Two messages each way and a recap lands in Charles's inbox:</b> the transcript, the properties, what she picked up about satisfaction and intent. Once per conversation.</span></li>
-        <li><span class="n">7</span><span class="t"><b>Reply STOP at any point.</b> Opt-out is handled before the model is called, so it cannot be missed.</span></li>
+        <li><span class="n">7</span><span class="t"><b>Reply STOP at any point.</b> Opt-out is handled before the model is called, so it cannot be missed. START lifts it again. <b>Text RESTART to start over</b> from the opening message, without the console.</span></li>
       </ol>
     </div>
 
@@ -437,7 +433,7 @@
                esc(d.property_address || d.property_street || 'unknown address') +
                (isFocus ? ' <span class="pill">in focus</span>' : '') + '</div>' +
                '<div class="l">Mortgage ' + esc(d.mortgage_year || '?') + ' via ' + esc(d.advisor_name || 'MoneyPark') +
-               ', ' + esc(d.months_to_expiry || '?') + ' months to expiry. Estimate ' +
+               '. Estimate ' +
                esc(d.current_value_estimate || 'unknown') + ', ' + esc(d.value_change_hint || 'no direction') + '.</div>' +
                '<div class="l">Activation link ' + (d.linkSent ? 'already sent' : 'not sent yet') +
                ', cockpit ' + (d.cockpitActivated ? 'activated' : 'not activated') + '.</div>' +
@@ -505,7 +501,7 @@
         var payload = { reset: document.getElementById('reset').checked };
         var DOSSIER = ['offerId', 'property_street', 'property_post_code', 'property_city',
                        'property_type', 'building_year', 'living_area', 'advisor_name',
-                       'mortgage_year', 'months_to_expiry', 'cockpit_link'];
+                       'mortgage_year', 'cockpit_link'];
         var PERSON = ['customer_first_name', 'customer_last_name', 'customer_phone', 'email', 'language'];
 
         Array.prototype.forEach.call(form.elements, function (el) {
