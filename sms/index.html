@@ -44,6 +44,15 @@
       font-weight: 700; letter-spacing: -0.01em; font-size: 18px; color: var(--mp-ink);
     }
     .brand .dot { width: 12px; height: 12px; border-radius: 50%; background: var(--mp-blue); display: inline-block; }
+    header { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+    .version { display: inline-flex; border: 1px solid var(--mp-line); border-radius: 999px; padding: 3px; background: var(--mp-card); }
+    .version input { position: absolute; opacity: 0; pointer-events: none; }
+    .version label { padding: 6px 14px; border-radius: 999px; font-size: 14px; font-weight: 600; cursor: pointer; color: var(--mp-muted); }
+    .version input:checked + label { background: var(--mp-blue); color: #fff; }
+    .version input:focus-visible + label { outline: 2px solid var(--mp-blue); outline-offset: 2px; }
+    .version-tag { display: inline-block; font-weight: 700; padding: 1px 8px; border-radius: 6px; background: var(--mp-blue); color: #fff; }
+    [data-version] { display: none; }
+    body[data-v="A"] [data-version="A"], body[data-v="B"] [data-version="B"] { display: revert; }
     .ribbon {
       display: flex; align-items: flex-start; gap: 10px;
       background: var(--mp-soft-bg); border: 1px solid var(--mp-soft-line); color: var(--mp-soft-ink);
@@ -157,11 +166,18 @@
   <div class="wrap">
     <header>
       <span class="brand"><span class="dot"></span> MoneyPark · MPRE</span>
+      <div class="version" role="radiogroup" aria-label="Version of the activation test">
+        <input type="radio" name="version" id="vA" value="A" checked /><label for="vA">A · SMS only</label>
+        <input type="radio" name="version" id="vB" value="B" /><label for="vB">B · SMS + call</label>
+      </div>
     </header>
 
     <div class="ribbon">
       <span>💬</span>
-      <span>Internal test console for the <b>text-only Maia channel</b>. Create a lead and its dossier and have Maia text you about it, or pick up an existing lead by its id and let her carry on where the conversation stopped.</span>
+      <span>Internal test console, <b>version <span class="version-tag" id="vtag">A</span></b>, both work in progress.
+        <span data-version="A">Version A is the text-only thread: Maia texts the value and the cockpit link, and leads to a close within five messages.</span>
+        <span data-version="B">Version B is the same thread, but right after the value Maia offers two ways forward: the cockpit, and a short call with her voice agent to refine the valuation.</span>
+        Create a lead and its dossier and have Maia text you about it, or pick up an existing lead of the same version by its id.</span>
     </div>
 
     <h1>Trigger an SMS conversation with Maia</h1>
@@ -320,8 +336,16 @@
     </div>
 
     <div class="card">
-      <h2>What happens after you trigger</h2>
-      <ol class="steps">
+      <h2>What happens after you trigger, version <span class="version-tag" id="vtag2">A</span></h2>
+      <ol class="steps" data-version="B">
+        <li><span class="n">1</span><span class="t"><b>PriceHubble decides whether the lead exists</b>, then the dossier is created and valued, exactly as in A.</span></li>
+        <li><span class="n">2</span><span class="t"><b>The same opener as A.</b> On a yes, one message gives the value and <b>two ways forward</b>: the cockpit link to follow the value, and a link to request a short call.</span></li>
+        <li><span class="n">3</span><span class="t"><b>The call.</b> Opening the link shows a page with one button; pressing it has Maia's voice agent call you within seconds. Replying "Rufen Sie mich an" or "Appelez-moi" requests the same call. Only allowlisted test numbers are dialled, and only while the voice side is live; otherwise Maia says so and an advisor takes over.</span></li>
+        <li><span class="n">4</span><span class="t"><b>A correction</b> ("die Küche ist neu") gives the new value and offers the call again. At most five messages from Maia, then the close with the cockpit link.</span></li>
+        <li><span class="n">5</span><span class="t"><b>Recaps</b>: one per SMS thread, like A, and one per call from the voice side.</span></li>
+        <li><span class="n">6</span><span class="t"><b>STOP, START and RESTART</b> work as in A. A B lead is kept apart from an A lead on the same number: replies go to the version that texted last.</span></li>
+      </ol>
+      <ol class="steps" data-version="A">
         <li><span class="n">1</span><span class="t"><b>PriceHubble decides whether the lead exists.</b> One lead per mobile number, so triggering twice resumes rather than duplicating. Then the dossier is created and valued. If any of that fails you get the step and the reason, and nothing is sent.</span></li>
         <li><span class="n">2</span><span class="t"><b>A new lead gets the templated opener:</b> who Maia is, that the value moved, and one question. No link, no figure yet.</span></li>
         <li><span class="n">3</span><span class="t"><b>An existing lead, or a restart, gets the opener again</b>, and the thread starts over: at most five messages from Maia, each ending on a JA/NEIN question the owner can also answer in their own words.</span></li>
@@ -343,7 +367,23 @@
       // The intake resolves the lead and the dossier against the PriceHubble API, then hands over
       // to the SMS flow. The console never calls the SMS flow directly any more.
       var INTAKE = 'https://pricehubble.app.n8n.cloud/webhook/mp-maia-lead-intake';
-      var LOOKUP = 'https://pricehubble.app.n8n.cloud/webhook/mp-maia-lead-lookup';
+      // A and B keep their leads apart, so the lookup follows the version. The intake routes the
+      // trigger itself, from the variant in the payload.
+      var LOOKUPS = { A: 'https://pricehubble.app.n8n.cloud/webhook/mp-maia-lead-lookup',
+                      B: 'https://pricehubble.app.n8n.cloud/webhook/mp-maia-b-lead-lookup' };
+      var version = 'A';
+      function setVersion(v) {
+        version = v === 'B' ? 'B' : 'A';
+        document.body.setAttribute('data-v', version);
+        document.getElementById('v' + version).checked = true;
+        document.getElementById('vtag').textContent = version;
+        document.getElementById('vtag2').textContent = version;
+        document.getElementById('go').textContent = 'Trigger SMS from Maïa, version ' + version;
+      }
+      Array.prototype.forEach.call(document.querySelectorAll('input[name=version]'), function (el) {
+        el.addEventListener('change', function () { setVersion(el.value); });
+      });
+      setVersion(new URLSearchParams(window.location.search).get('version'));
 
       var form = document.getElementById('form');
       var btn = document.getElementById('go');
@@ -461,7 +501,7 @@
           if (!silent) { show('bad', 'No lead id', '<p style="margin:0">Enter the leadId you want to resume.</p>'); }
           return Promise.resolve();
         }
-        return fetch(LOOKUP + '?leadId=' + encodeURIComponent(id))
+        return fetch(LOOKUPS[version] + '?leadId=' + encodeURIComponent(id))
           .then(function (r) { return r.json(); })
           .then(function (d) { renderLead(Array.isArray(d) ? d[0] : d); })
           .catch(function (err) {
@@ -498,7 +538,7 @@
       form.addEventListener('submit', function (e) {
         e.preventDefault();
         var wantDossier = mode() === 'new' || addDossier.checked;
-        var payload = { reset: document.getElementById('reset').checked };
+        var payload = { reset: document.getElementById('reset').checked, variant: version };
         var DOSSIER = ['offerId', 'property_street', 'property_post_code', 'property_city',
                        'property_type', 'building_year', 'living_area', 'advisor_name',
                        'mortgage_year', 'cockpit_link'];
@@ -578,7 +618,7 @@
             '<p style="margin:0">' + esc(err.message) + '. The n8n workflow may be inactive.</p>');
         }).then(function () {
           btn.disabled = false;
-          btn.textContent = 'Trigger SMS from Maïa';
+          btn.textContent = 'Trigger SMS from Maïa, version ' + version;
         });
       });
     })();
