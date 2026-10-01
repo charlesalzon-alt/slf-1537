@@ -51,8 +51,8 @@
     .version input:checked + label { background: var(--mp-blue); color: #fff; }
     .version input:focus-visible + label { outline: 2px solid var(--mp-blue); outline-offset: 2px; }
     .version-tag { display: inline-block; font-weight: 700; padding: 1px 8px; border-radius: 6px; background: var(--mp-blue); color: #fff; }
-    [data-version] { display: none; }
-    body[data-v="A"] [data-version="A"], body[data-v="B"] [data-version="B"] { display: revert; }
+    /* Hides the other version's blocks. !important because .steps sets its own display further down. */
+    body[data-v="A"] [data-version="B"], body[data-v="B"] [data-version="A"] { display: none !important; }
     .ribbon {
       display: flex; align-items: flex-start; gap: 10px;
       background: var(--mp-soft-bg); border: 1px solid var(--mp-soft-line); color: var(--mp-soft-ink);
@@ -162,7 +162,7 @@
     form[data-mode="existing"] .only-new { display: none; }
   </style>
 </head>
-<body>
+<body data-v="A">
   <div class="wrap">
     <header>
       <span class="brand"><span class="dot"></span> MoneyPark · MPRE</span>
@@ -195,7 +195,7 @@
           <label id="modeExistingLabel">
             <input type="radio" name="mode" value="existing" />
             <span class="t">An existing lead</span>
-            <span class="d">Enter a lead id. Maia picks the conversation back up from its history.</span>
+            <span class="d">Enter a lead id to see what Maia knows, attach another dossier, or send the opener again.</span>
           </label>
         </div>
 
@@ -235,7 +235,7 @@
               <option value="fr">French</option>
               <option value="it">Italian</option>
             </select>
-            <p class="sub-label">Maia switches if the owner replies in another language.</p>
+            <p class="sub-label">The whole thread stays in this language, whatever the owner replies in.</p>
           </div>
         </div>
       </div>
@@ -248,7 +248,6 @@
       <div class="card">
         <h2>The dossier</h2>
         <p class="hint">One dossier is one property with its mortgage, its valuation and its own cockpit state. <b>A lead can hold several.</b> Pushing the same offer id twice updates that dossier instead of creating a second one.</p>
-        <p class="hint"><b>You no longer type the estimate.</b> The address below creates a real PriceHubble dossier, and the figure, its confidence and the way it moved over the past year all come back from the valuation API. That is what Maia quotes.</p>
         <label class="check only-existing">
           <input id="addDossier" type="checkbox" />
           <span>Attach another dossier to this lead. Leave this off and Maia simply resumes on the dossier she was already discussing.</span>
@@ -337,22 +336,21 @@
 
     <div class="card">
       <h2>What happens after you trigger, version <span class="version-tag" id="vtag2">A</span></h2>
-      <ol class="steps" data-version="B">
-        <li><span class="n">1</span><span class="t"><b>PriceHubble decides whether the lead exists</b>, then the dossier is created and valued, exactly as in A.</span></li>
-        <li><span class="n">2</span><span class="t"><b>The same opener as A.</b> On a yes, one message gives the value and <b>two ways forward</b>: the cockpit link to follow the value, and a link to request a short call.</span></li>
-        <li><span class="n">3</span><span class="t"><b>The call.</b> Opening the link shows a page with one button; pressing it has Maia's voice agent call you within seconds. Replying "Rufen Sie mich an" or "Appelez-moi" requests the same call. Only allowlisted test numbers are dialled, and only while the voice side is live; otherwise Maia says so and an advisor takes over.</span></li>
-        <li><span class="n">4</span><span class="t"><b>A correction</b> ("die Küche ist neu") gives the new value and offers the call again. At most five messages from Maia, then the close with the cockpit link.</span></li>
-        <li><span class="n">5</span><span class="t"><b>Recaps</b>: one per SMS thread, like A, and one per call from the voice side.</span></li>
-        <li><span class="n">6</span><span class="t"><b>STOP, START and RESTART</b> work as in A. A B lead is kept apart from an A lead on the same number: replies go to the version that texted last.</span></li>
-      </ol>
       <ol class="steps" data-version="A">
-        <li><span class="n">1</span><span class="t"><b>PriceHubble decides whether the lead exists.</b> One lead per mobile number, so triggering twice resumes rather than duplicating. Then the dossier is created and valued. If any of that fails you get the step and the reason, and nothing is sent.</span></li>
-        <li><span class="n">2</span><span class="t"><b>A new lead gets the templated opener:</b> who Maia is, that the value moved, and one question. No link, no figure yet.</span></li>
-        <li><span class="n">3</span><span class="t"><b>An existing lead, or a restart, gets the opener again</b>, and the thread starts over: at most five messages from Maia, each ending on a JA/NEIN question the owner can also answer in their own words.</span></li>
-        <li><span class="n">4</span><span class="t"><b>You reply from your phone.</b> Every message in and out is logged against the lead, and the whole thread is replayed on each turn, so nothing is forgotten.</span></li>
-        <li><span class="n">5</span><span class="t"><b>She stays on the right property, and on the API figure.</b> The estimate, its confidence and the way it moved come from the valuation API, tracked per dossier. A poor-confidence valuation is not quoted at all.</span></li>
-        <li><span class="n">6</span><span class="t"><b>Two messages each way and a recap lands in Charles's inbox:</b> the transcript, the properties, what she picked up about satisfaction and intent. Once per conversation.</span></li>
-        <li><span class="n">7</span><span class="t"><b>Reply STOP at any point.</b> Opt-out is handled before the model is called, so it cannot be missed. START lifts it again. <b>Text RESTART to start over</b> from the opening message, without the console.</span></li>
+        <li><span class="n">1</span><span class="t"><b>The opener.</b> PriceHubble checks the lead, creates the dossier and values it, then Maia texts who she is and that the value moved, and asks JA or NEIN. If a step fails you see which one and why, and nothing is sent.</span></li>
+        <li><span class="n">2</span><span class="t"><b>The value and the cockpit.</b> On a yes: the estimate from the valuation API, written the way the owner's language writes it, with the cockpit link, and one question: has anything changed? JA, NEIN, or a short description.</span></li>
+        <li><span class="n">3</span><span class="t"><b>The correction.</b> A description ("die Küche ist neu") updates the PriceHubble dossier: the new value, the cockpit link again, and the offer of an advisor.</span></li>
+        <li><span class="n">4</span><span class="t"><b>The advisor.</b> On a yes, or when the owner asks in their own words, Maia asks when suits them and keeps the answer as written.</span></li>
+        <li><span class="n">5</span><span class="t"><b>The close.</b> At most five messages from Maia, the last one always the close with the cockpit link. After it she only answers an opt-out or an advisor request. Once two messages went each way, a recap goes to Charles and Julian.</span></li>
+        <li><span class="n">6</span><span class="t"><b>STOP, START, RESTART.</b> STOP ends the thread and Twilio confirms in English; STOPP or ABMELDEN get Maia's own confirmation. START lifts an opt-out, RESTART starts over from the opener.</span></li>
+      </ol>
+      <ol class="steps" data-version="B">
+        <li><span class="n">1</span><span class="t"><b>The opener</b>, the same as in A, once PriceHubble has checked the lead and valued the dossier.</span></li>
+        <li><span class="n">2</span><span class="t"><b>The value and two ways forward</b>, in one message: the cockpit link to follow the value, and a link to request a short call. The call link is issued by the voice side and carries a token, not the lead id.</span></li>
+        <li><span class="n">3</span><span class="t"><b>"Rufen Sie mich an" or "Appelez-moi".</b> Replying by SMS requests the same call as the link. Maia answers that she is calling now, that a call is already on its way, or, when no call can be placed, that an advisor will get in touch.</span></li>
+        <li><span class="n">4</span><span class="t"><b>Maia's call, in six steps.</b> Opening the link shows a page with one button; pressing it has Maia call within seconds. On the call she confirms the property data, adds the details that move the valuation most, updates the PriceHubble dossier, quotes the new estimate, asks about the owner's plans and needs, and sends the cockpit link.</span></li>
+        <li><span class="n">5</span><span class="t"><b>After the call.</b> The cockpit link arrives by SMS from Maia's Swiss number, so it lands in the same thread, and the call's summary is added to the lead. A recap follows each call, on top of the one per SMS thread.</span></li>
+        <li><span class="n">6</span><span class="t"><b>Limits while in test mode.</b> Only allowlisted numbers are called; any other number gets Maia's apology and an advisor. Corrections, STOP, START and RESTART work as in A, and a reply goes to the version that texted that number last.</span></li>
       </ol>
     </div>
 
@@ -372,13 +370,15 @@
       var LOOKUPS = { A: 'https://pricehubble.app.n8n.cloud/webhook/mp-maia-lead-lookup',
                       B: 'https://pricehubble.app.n8n.cloud/webhook/mp-maia-b-lead-lookup' };
       var version = 'A';
+      var NO_LEAD_ID = '<p style="margin:0">Enter the lead id you want to resume.</p>';
+      function buttonLabel() { return 'Trigger SMS from Maïa, version ' + version; }
       function setVersion(v) {
         version = v === 'B' ? 'B' : 'A';
         document.body.setAttribute('data-v', version);
         document.getElementById('v' + version).checked = true;
         document.getElementById('vtag').textContent = version;
         document.getElementById('vtag2').textContent = version;
-        document.getElementById('go').textContent = 'Trigger SMS from Maïa, version ' + version;
+        document.getElementById('go').textContent = buttonLabel();
       }
       Array.prototype.forEach.call(document.querySelectorAll('input[name=version]'), function (el) {
         el.addEventListener('change', function () { setVersion(el.value); });
@@ -442,9 +442,18 @@
         note: 'Known history',
         sms_out: 'Maia texted',
         sms_in: 'Owner replied',
-        cockpit_link_sent: 'Activation link sent',
+        cockpit_link_sent: 'Cockpit link sent',
+        dossier_edited: 'Property corrected',
         opt_out: 'Opted out',
-        advisor_callback: 'Handed to an advisor'
+        opt_in: 'Opted back in',
+        restart: 'Thread restarted',
+        advisor_callback: 'Handed to an advisor',
+        appointment: 'Advisor time given',
+        call_link_sent: 'Call link sent',
+        call_trigger: 'Call asked for by SMS',
+        call_requested: 'Call requested',
+        call_summary: 'Call summary',
+        call_missed: 'Call not answered'
       };
 
       function renderLead(row) {
@@ -498,7 +507,7 @@
 
       function loadLead(id, silent) {
         if (!id) {
-          if (!silent) { show('bad', 'No lead id', '<p style="margin:0">Enter the leadId you want to resume.</p>'); }
+          if (!silent) { show('bad', 'No lead id', NO_LEAD_ID); }
           return Promise.resolve();
         }
         return fetch(LOOKUPS[version] + '?leadId=' + encodeURIComponent(id))
@@ -555,7 +564,7 @@
         });
 
         if (mode() === 'existing' && !payload.leadId) {
-          show('bad', 'No lead id', '<p style="margin:0">Enter the lead id you want to resume.</p>');
+          show('bad', 'No lead id', NO_LEAD_ID);
           return;
         }
         if (mode() === 'new' && !MOBILE.test(toE164(phoneInput.value))) {
@@ -618,7 +627,7 @@
             '<p style="margin:0">' + esc(err.message) + '. The n8n workflow may be inactive.</p>');
         }).then(function () {
           btn.disabled = false;
-          btn.textContent = 'Trigger SMS from Maïa, version ' + version;
+          btn.textContent = buttonLabel();
         });
       });
     })();
