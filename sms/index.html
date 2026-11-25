@@ -162,22 +162,15 @@
     form[data-mode="existing"] .only-new { display: none; }
   </style>
 </head>
-<body data-v="A">
+<body>
   <div class="wrap">
     <header>
       <span class="brand"><span class="dot"></span> MoneyPark · MPRE</span>
-      <div class="version" role="radiogroup" aria-label="Version of the activation test">
-        <input type="radio" name="version" id="vA" value="A" checked /><label for="vA">A · SMS only</label>
-        <input type="radio" name="version" id="vB" value="B" /><label for="vB">B · SMS + call</label>
-      </div>
     </header>
 
     <div class="ribbon">
       <span>💬</span>
-      <span>Internal test console, <b>version <span class="version-tag" id="vtag">A</span></b>, both work in progress.
-        <span data-version="A">Version A is the text-only thread: Maia texts the value and the cockpit link, and leads to a close within five messages.</span>
-        <span data-version="B">Version B is the same thread, but right after the value Maia offers two ways forward: the cockpit, and a short call with her voice agent to refine the valuation.</span>
-        Create a lead and its dossier and have Maia text you about it, or pick up an existing lead of the same version by its id.</span>
+      <span>Internal test console. Maia texts the value and the Cockpit link. If you name a need, or ask her to call, she calls you back. Monday to Saturday, 08:00 to 20:00 Zurich time.</span>
     </div>
 
     <h1>Trigger an SMS conversation with Maia</h1>
@@ -284,7 +277,12 @@
           <div class="field">
             <label for="area">Living area, m2</label>
             <input id="area" name="living_area" value="120" inputmode="numeric" />
-            <p class="sub-label">Year and area drive the valuation. Without them the API returns no figure.</p>
+            <p class="sub-label">Year and living area drive the valuation. A house also needs the plot area, or PriceHubble refuses the dossier.</p>
+          </div>
+          <div class="field">
+            <label for="land">Plot area, m2</label>
+            <input id="land" name="land_area" value="" inputmode="numeric" />
+            <p class="sub-label">Required for a house. Leave empty for an apartment.</p>
           </div>
           <div class="field">
             <label for="advisor">Advisor who arranged the mortgage</label>
@@ -335,22 +333,13 @@
     </div>
 
     <div class="card">
-      <h2>What happens after you trigger, version <span class="version-tag" id="vtag2">A</span></h2>
-      <ol class="steps" data-version="A">
-        <li><span class="n">1</span><span class="t"><b>The opener.</b> PriceHubble checks the lead, creates the dossier and values it, then Maia texts who she is and that the value moved, and asks JA or NEIN. If a step fails you see which one and why, and nothing is sent.</span></li>
-        <li><span class="n">2</span><span class="t"><b>The value and the cockpit.</b> On a yes: the estimate from the valuation API, written the way the owner's language writes it, with the cockpit link, and one question: has anything changed? JA, NEIN, or a short description.</span></li>
-        <li><span class="n">3</span><span class="t"><b>The correction.</b> A description ("die Küche ist neu") updates the PriceHubble dossier: the new value, the cockpit link again, and the offer of an advisor.</span></li>
-        <li><span class="n">4</span><span class="t"><b>The advisor.</b> On a yes, or when the owner asks in their own words, Maia asks when suits them and keeps the answer as written.</span></li>
-        <li><span class="n">5</span><span class="t"><b>The close.</b> At most five messages from Maia, the last one always the close with the cockpit link. After it she only answers an opt-out or an advisor request. Once two messages went each way, a recap goes to Charles and Julian.</span></li>
-        <li><span class="n">6</span><span class="t"><b>STOP, START, RESTART.</b> STOP ends the thread and Twilio confirms in English; STOPP or ABMELDEN get Maia's own confirmation. START lifts an opt-out, RESTART starts over from the opener.</span></li>
-      </ol>
-      <ol class="steps" data-version="B">
-        <li><span class="n">1</span><span class="t"><b>The opener</b>, the same as in A, once PriceHubble has checked the lead and valued the dossier.</span></li>
-        <li><span class="n">2</span><span class="t"><b>The value and two ways forward</b>, in one message: the cockpit link to follow the value, and a link to request a short call. The call link is issued by the voice side and carries a token, not the lead id.</span></li>
-        <li><span class="n">3</span><span class="t"><b>"Rufen Sie mich an" or "Appelez-moi".</b> Replying by SMS requests the same call as the link. Maia answers that she is calling now, that a call is already on its way, or, when no call can be placed, that an advisor will get in touch.</span></li>
-        <li><span class="n">4</span><span class="t"><b>Maia's call, in six steps.</b> Opening the link shows a page with one button; pressing it has Maia call within seconds. On the call she confirms the property data, adds the details that move the valuation most, updates the PriceHubble dossier, quotes the new estimate, asks about the owner's plans and needs, and sends the cockpit link.</span></li>
-        <li><span class="n">5</span><span class="t"><b>After the call.</b> The cockpit link arrives by SMS from Maia's Swiss number, so it lands in the same thread, and the call's summary is added to the lead. A recap follows each call, on top of the one per SMS thread.</span></li>
-        <li><span class="n">6</span><span class="t"><b>Limits while in test mode.</b> Only allowlisted numbers are called; any other number gets Maia's apology and an advisor. Corrections, STOP, START and RESTART work as in A, and a reply goes to the version that texted that number last.</span></li>
+      <h2>What happens after you trigger</h2>
+      <ol class="steps">
+        <li><span class="n">1</span><span class="t"><b>The opener.</b> PriceHubble checks the lead, creates the dossier and values it, then Maia texts who she is and asks if you want the current value.</span></li>
+        <li><span class="n">2</span><span class="t"><b>The value.</b> The estimate, one sentence on why the Cockpit is worth opening, the link, then one question: renovating, refinancing, selling, or none of these.</span></li>
+        <li><span class="n">3</span><span class="t"><b>A named need.</b> A renovation you describe updates the value. Renovating, refinancing or selling offers a short call. Reply YES and Maia calls you now. None of these closes the thread.</span></li>
+        <li><span class="n">4</span><span class="t"><b>The call.</b> "Rufen Sie mich an", "Appelez-moi", "call me", or YES to the short call, and Maia calls now. She asks whether you want the valuation, the financing, or something else. She does not read a product list. Outside Monday to Saturday, 08:00 to 20:00 Zurich time, an advisor follows up instead.</span></li>
+        <li><span class="n">5</span><span class="t"><b>Where the data came from.</b> Maia answers that question, including after the thread has closed.</span></li>
       </ol>
     </div>
 
@@ -365,25 +354,9 @@
       // The intake resolves the lead and the dossier against the PriceHubble API, then hands over
       // to the SMS flow. The console never calls the SMS flow directly any more.
       var INTAKE = 'https://pricehubble.app.n8n.cloud/webhook/mp-maia-lead-intake';
-      // A and B keep their leads apart, so the lookup follows the version. The intake routes the
-      // trigger itself, from the variant in the payload.
-      var LOOKUPS = { A: 'https://pricehubble.app.n8n.cloud/webhook/mp-maia-lead-lookup',
-                      B: 'https://pricehubble.app.n8n.cloud/webhook/mp-maia-b-lead-lookup' };
-      var version = 'A';
+      // The intake always starts the one SMS plus call flow. Lookup reads that flow's leads.
+      var LOOKUP = 'https://pricehubble.app.n8n.cloud/webhook/mp-maia-b-lead-lookup';
       var NO_LEAD_ID = '<p style="margin:0">Enter the lead id you want to resume.</p>';
-      function buttonLabel() { return 'Trigger SMS from Maïa, version ' + version; }
-      function setVersion(v) {
-        version = v === 'B' ? 'B' : 'A';
-        document.body.setAttribute('data-v', version);
-        document.getElementById('v' + version).checked = true;
-        document.getElementById('vtag').textContent = version;
-        document.getElementById('vtag2').textContent = version;
-        document.getElementById('go').textContent = buttonLabel();
-      }
-      Array.prototype.forEach.call(document.querySelectorAll('input[name=version]'), function (el) {
-        el.addEventListener('change', function () { setVersion(el.value); });
-      });
-      setVersion(new URLSearchParams(window.location.search).get('version'));
 
       var form = document.getElementById('form');
       var btn = document.getElementById('go');
@@ -510,7 +483,7 @@
           if (!silent) { show('bad', 'No lead id', NO_LEAD_ID); }
           return Promise.resolve();
         }
-        return fetch(LOOKUPS[version] + '?leadId=' + encodeURIComponent(id))
+        return fetch(LOOKUP + '?leadId=' + encodeURIComponent(id))
           .then(function (r) { return r.json(); })
           .then(function (d) { renderLead(Array.isArray(d) ? d[0] : d); })
           .catch(function (err) {
@@ -547,9 +520,9 @@
       form.addEventListener('submit', function (e) {
         e.preventDefault();
         var wantDossier = mode() === 'new' || addDossier.checked;
-        var payload = { reset: document.getElementById('reset').checked, variant: version };
+        var payload = { reset: document.getElementById('reset').checked, variant: 'B' };
         var DOSSIER = ['offerId', 'property_street', 'property_post_code', 'property_city',
-                       'property_type', 'building_year', 'living_area', 'advisor_name',
+                       'property_type', 'building_year', 'living_area', 'land_area', 'advisor_name',
                        'mortgage_year', 'cockpit_link'];
         var PERSON = ['customer_first_name', 'customer_last_name', 'customer_phone', 'email', 'language'];
 
@@ -565,6 +538,12 @@
 
         if (mode() === 'existing' && !payload.leadId) {
           show('bad', 'No lead id', NO_LEAD_ID);
+          return;
+        }
+        if (wantDossier && payload.property_type === 'house' && !payload.land_area) {
+          show('bad', 'Plot area missing',
+               '<p style="margin:0">A house needs the plot area in m2. PriceHubble refuses the dossier without it.</p>');
+          document.getElementById('land').focus();
           return;
         }
         if (mode() === 'new' && !MOBILE.test(toE164(phoneInput.value))) {
