@@ -291,8 +291,13 @@
             <p class="sub-label">Shown in the recap and the advisor handover only, never in an SMS.</p>
           </div>
           <div class="field">
-            <label for="year">Mortgage year</label>
-            <input id="year" name="mortgage_year" value="2021" inputmode="numeric" />
+            <label for="mstart">Mortgage tranche start</label>
+            <input id="mstart" name="mortgage_start_date" type="date" value="2018-06-30" />
+          </div>
+          <div class="field">
+            <label for="mend">Mortgage expiry</label>
+            <input id="mend" name="mortgage_expiry_date" type="date" value="2028-06-30" />
+            <p class="sub-label">Maia raises refinancing only within 36 months of expiry, stronger under 18. Try 2027-12-31 to hear it.</p>
           </div>
           <div class="field">
             <label for="link">Cockpit activation link</label>
@@ -524,7 +529,7 @@
         var payload = { reset: document.getElementById('reset').checked, variant: 'B' };
         var DOSSIER = ['offerId', 'property_street', 'property_post_code', 'property_city',
                        'property_type', 'building_year', 'living_area', 'land_area', 'advisor_name',
-                       'mortgage_year', 'cockpit_link'];
+                       'mortgage_start_date', 'mortgage_expiry_date', 'cockpit_link'];
         var PERSON = ['customer_first_name', 'customer_last_name', 'customer_phone', 'email', 'language'];
 
         Array.prototype.forEach.call(form.elements, function (el) {
